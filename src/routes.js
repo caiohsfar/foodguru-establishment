@@ -1,11 +1,17 @@
 import { createAppContainer, createSwitchNavigator, createStackNavigator } from 'react-navigation';
 
-import AuthLoading from './pages/AuthLoading';
+import Splash from './pages/Splash';
 import SignIn from './pages/SignIn';
 import Home from './pages/Home';
+import {
+  transitionConfig,
+  defaultNavigationOptions
+} from './config/NavigationConfig';
+
 
 const AppStack = createStackNavigator(
-  { Home }
+  { Home },
+  { transitionConfig, defaultNavigationOptions }
 );
 const AuthStack = createStackNavigator(
   { SignIn }
@@ -14,12 +20,12 @@ const AuthStack = createStackNavigator(
 
 const Routes = createAppContainer(createSwitchNavigator(
   {
-    AuthLoading,
+    Splash,
     App: AppStack,
     Auth: AuthStack,
   },
   {
-    initialRouteName: 'AuthLoading',
+    initialRouteName: 'Splash',
   }
 ));
 

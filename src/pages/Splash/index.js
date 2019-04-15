@@ -5,15 +5,24 @@ import {
 /*
     Tela que aparecerá e decidirá
     se o usuário deve ir pra tela de login ou pra Home;
+    Pode ser a Splash screen
 */
 
-export default class AuthLoading extends Component {
+export default class Splash extends Component {
+  componentDidMount = () => {
+    const { navigation } = this.props;
+    setTimeout(
+      () => { navigation.navigate('App'); },
+      2000
+    );
+  }
+
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator />
         <StatusBar barStyle="default" />
-        <Text> Hello, World! </Text>
+        <Text> Splashhhh! </Text>
       </View>
     );
   }
