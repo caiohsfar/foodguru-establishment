@@ -1,0 +1,9 @@
+export const SIGNUP_SUCCESS = 'signup_success';
+export const SIGNUP_FAILURE = 'signup_fail';
+export const SIGNIN_SUCCESS = 'signin_success';
+export const SIGNIN_FAILURE = 'signin_fail';
+export const IS_LOADING = 'is_loading';
+export const CEP_SUCCESS = 'cep_success';
+export const CEP_FAILURE = 'cep_failure';
+export const CLEAR_ADDRESS = 'clear_addres';
+export const CEP_LOADING = 'cep_loading';
