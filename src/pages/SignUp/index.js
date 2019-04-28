@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
   ScrollView, View, Text, ActivityIndicator
 } from 'react-native';
@@ -13,15 +13,7 @@ import { findCep, signUp, clearAddress } from '../../store/actions/AuthActions';
 import styles from './styles';
 import { errorMessages, generalMessages } from '../../constants/messages';
 
-
-// const validationSchema = yup.object().shape({
-//   name: yup.string().required(errorMessages.EMPTY_FIELD_ERROR),
-//   email: yup
-//     .string()
-//     .email(errorMessages.EMAIL_ERROR)
-//     .required(errorMessages.EMPTY_FIELD_ERROR)
-// });
-class SignUp extends Component {
+class SignUp extends PureComponent {
   static navigationOptions = {
     title: 'Cadastro'
   };
@@ -30,6 +22,10 @@ class SignUp extends Component {
     cep: '',
     addressError: false,
   };
+
+  componentWillUnmount() {
+    this.props.clearAddress();
+  }
 
   addressIsValid = (address, number) => {
     let validation = true;
