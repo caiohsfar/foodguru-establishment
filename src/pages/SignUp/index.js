@@ -80,7 +80,7 @@ class SignUp extends PureComponent {
                   error={formikProps.touched.name ? formikProps.errors.name : ''}
                 />
                 <TextField
-                  tintColor="grey"                 
+                  tintColor="grey"
                   containerStyle={styles.input}
                   label="CNPJ"
                   keyboardType="numeric"

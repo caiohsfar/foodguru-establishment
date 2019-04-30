@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import {
-  View, ActivityIndicator, StatusBar, Image
-} from 'react-native';
+import { View, StatusBar } from 'react-native';
 import { appTheme } from '../../constants/styles';
 import styles from './styles';
 /*
@@ -9,6 +7,7 @@ import styles from './styles';
     se o usuário deve ir pra tela de login ou pra Home;
     Pode ser a Splash screen
 */
+import Logo from '../../components/Logo';
 
 export default class Splash extends Component {
   componentDidMount = () => {
@@ -22,7 +21,7 @@ export default class Splash extends Component {
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor={appTheme.COLOR} barStyle="default" />
-        <Image source={require('../../assets/img/react.png')} />
+        <Logo width={100} height={100} resizeMode="contain" />
       </View>
     );
   }
