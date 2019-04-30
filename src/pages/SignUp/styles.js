@@ -1,11 +1,21 @@
 import { StyleSheet } from 'react-native';
+import { appTheme } from '../../constants/styles';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
     padding: 40
   },
+  buttonContatiner: {
+    margin: 50,
+    marginTop: 20
+  },
+  button: {
+    backgroundColor: appTheme.COLOR
+  },
   errorMessage: {
+    alignSelf: 'center',
+    marginTop: 20,
     fontSize: 15,
     color: 'red'
   },

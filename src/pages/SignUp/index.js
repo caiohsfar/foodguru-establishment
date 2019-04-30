@@ -12,6 +12,7 @@ import formValidationSchema from '../../utils/formValidationSchema';
 import { findCep, signUp, clearAddress } from '../../store/actions/AuthActions';
 import styles from './styles';
 import { errorMessages, generalMessages } from '../../constants/messages';
+import removeNotNumbers from '../../utils/removeNotNumbers';
 
 class SignUp extends PureComponent {
   static navigationOptions = {
@@ -36,7 +37,8 @@ class SignUp extends PureComponent {
     return validation;
   }
 
-  handleCepChange = (newText) => {
+  handleCepChange = (text) => {
+    const newText = removeNotNumbers(text);
     this.setState({ cep: newText });
     if (newText.toString().length === 8) {
       this.props.findCep(newText);
@@ -71,29 +73,39 @@ class SignUp extends PureComponent {
             <React.Fragment>
               <View style={styles.formikContainer}>
                 <TextField
+                  tintColor="grey"
+                  label="Nome"
+                  onChangeText={formikProps.handleChange('name')}
+                  value={formikProps.values.name}
+                  error={formikProps.touched.name ? formikProps.errors.name : ''}
+                />
+                <TextField
+                  tintColor="grey"                 
+                  containerStyle={styles.input}
+                  label="CNPJ"
+                  keyboardType="numeric"
+                  onChangeText={formikProps.handleChange('cnpj')}
+                  value={formikProps.values.cnpj}
+                  error={formikProps.touched.cnpj ? formikProps.errors.cnpj : ''}
+                />
+                <TextField
+                  tintColor="grey"
                   label="Email"
                   keyboardType="email-address"
                   onChangeText={formikProps.handleChange('email')}
                   value={formikProps.values.email}
                   error={formikProps.touched.email ? formikProps.errors.email : ''}
-                  //onBlur={formikProps.handleBlur('email')}
                 />
                 <TextField
-                  label="Nome"
-                  onChangeText={formikProps.handleChange('name')}
-                  value={formikProps.values.name}
-                  error={formikProps.touched.name ? formikProps.errors.name : ''}
-                  //onBlur={formikProps.handleBlur('name')}
-                />
-                <TextField
+                  tintColor="grey"
                   label="Senha"
                   secureTextEntry
                   onChangeText={formikProps.handleChange('password')}
                   value={formikProps.values.password}
                   error={formikProps.touched.password ? formikProps.errors.password : ''}
-                  //onBlur={formikProps.handleBlur('password')}
                 />
                 <TextField
+                  tintColor="grey"
                   label="Confirmar senha"
                   secureTextEntry
                   onChangeText={formikProps.handleChange('confirmPassword')}
@@ -101,21 +113,12 @@ class SignUp extends PureComponent {
                   error={
                     formikProps.touched.confirmPassword ? formikProps.errors.confirmPassword : ''
                   }
-                  //onBlur={formikProps.handleBlur('confirmPassword')}
-                />
-                <TextField
-                  containerStyle={styles.input}
-                  label="CNPJ"
-                  keyboardType="numeric"
-                  onChangeText={formikProps.handleChange('cnpj')}
-                  value={formikProps.values.cnpj}
-                  error={formikProps.touched.cnpj ? formikProps.errors.cnpj : ''}
-                  //onBlur={formikProps.handleBlur('cnpj')}
                 />
               </View>
               <View style={styles.addressContainer}>
                 <View style={styles.row}>
                   <TextField
+                    tintColor="grey"            
                     label="CEP"
                     containerStyle={styles.cep}
                     keyboardType="numeric"
@@ -136,13 +139,13 @@ class SignUp extends PureComponent {
                     value={this.props.address.street}
                   />
                   <TextField
+                    tintColor="grey"
                     label="N"
                     keyboardType="numeric"
                     containerStyle={styles.number}
                     onChangeText={formikProps.handleChange('number')}
                     value={formikProps.values.number}
                     error={formikProps.touched.number ? formikProps.errors.number : ''}
-                    //onBlur={formikProps.handleBlur('number')}
                   />
                 </View>
                 <View style={styles.row}>
@@ -165,15 +168,16 @@ class SignUp extends PureComponent {
                     value={this.props.address.state}
                   />
                 </View>
+                <Text style={styles.errorMessage}>
+                  {this.props.signUpErrorMessage && !this.props.isLoading 
+                    ? this.props.signUpErrorMessage 
+                    : null }
+                    Loren Ipsun sit amet
+                </Text>
               </View>
-              <Text style={styles.errorMessage}>
-                {this.props.signUpErrorMessage && !this.props.isLoading 
-                  ? this.props.signUpErrorMessage 
-                  : null }
-                  Loren Ipsun sit amet
-              </Text>
               <Button
-                containerStyle={{ margin: 50 }}
+                containerStyle={styles.buttonContatiner}
+                buttonStyle={styles.button}
                 onPress={formikProps.handleSubmit}
                 title="Cadastrar"
                 type="solid"
