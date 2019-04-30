@@ -19,7 +19,7 @@ export const signUp = user => (dispatch) => {
   dispatch(isLoading());
 
   api
-    .post('/api/establishment', user)
+    .post('/api/establishments', user)
     .then(() => dispatch(signUpSuccess()))
     .catch(error => dispatch(signUpFailure(error)));
   // OUTRAS TRATATIVAS

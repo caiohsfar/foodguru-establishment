@@ -1,10 +1,13 @@
-import React from 'react';
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
     padding: 40
+  },
+  errorMessage: {
+    fontSize: 15,
+    color: 'red'
   },
   addressContainer: {
     padding: 15,
