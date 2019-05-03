@@ -8,7 +8,7 @@ import {
 import { connect } from 'react-redux';
 import { Formik } from 'formik';
 import { TextField } from 'react-native-material-textfield';
-import formValidationSchema from '../../utils/formValidationSchema';
+import formValidationSchema from './formValidationSchema';
 import { findCep, signUp, clearAddress } from '../../store/actions/AuthActions';
 import styles from './styles';
 import { errorMessages, generalMessages } from '../../constants/messages';
@@ -82,7 +82,7 @@ class SignUp extends PureComponent {
                 <TextField
                   tintColor="grey"
                   containerStyle={styles.input}
-                  label="CNPJ"
+                  label="CNPJ (apenas números)"
                   keyboardType="numeric"
                   onChangeText={formikProps.handleChange('cnpj')}
                   value={formikProps.values.cnpj}
@@ -172,11 +172,10 @@ class SignUp extends PureComponent {
                   {this.props.signUpErrorMessage && !this.props.isLoading 
                     ? this.props.signUpErrorMessage 
                     : null }
-                    Loren Ipsun sit amet
                 </Text>
               </View>
               <Button
-                containerStyle={styles.buttonContatiner}
+                containerStyle={styles.buttonContainer}
                 buttonStyle={styles.button}
                 onPress={formikProps.handleSubmit}
                 title="Cadastrar"

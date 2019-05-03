@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, StatusBar } from 'react-native';
-import { appTheme } from '../../constants/styles';
+import { View, AsyncStorage } from 'react-native';
 import styles from './styles';
 /*
     Tela que aparecerá e decidirá
@@ -10,17 +9,28 @@ import styles from './styles';
 import Logo from '../../components/Logo';
 
 export default class Splash extends Component {
+  isAuth = async () => {
+    try {
+      return await AsyncStorage.getItem('@FoodGuru:session');
+    } catch (e) {
+      return null;
+    }
+  };
+
   componentDidMount = () => {
     const { navigation } = this.props;
     setTimeout(() => {
-      navigation.navigate('App');
+      if (this.isAuth() === null) {
+        navigation.navigate('App');
+      } else {
+        navigation.navigate('Auth');
+      }
     }, 2000);
   };
 
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar backgroundColor={appTheme.COLOR} barStyle="default" />
         <Logo width={100} height={100} resizeMode="contain" />
       </View>
     );

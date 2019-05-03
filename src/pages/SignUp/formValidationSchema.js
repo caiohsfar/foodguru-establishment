@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 // import { cnpj } from 'cpf-cnpj-validator';
-import { errorMessages } from '../constants/messages';
+import { errorMessages } from '../../constants/messages';
 
 export default yup.object().shape({
   name: yup.string().required(errorMessages.EMPTY_FIELD_ERROR),

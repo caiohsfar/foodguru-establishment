@@ -15,7 +15,7 @@ import { transitionConfig, defaultNavigationOptions } from './config/NavigationC
 const AppStack = createBottomTabNavigator({ Home }, { transitionConfig, defaultNavigationOptions });
 const AuthStack = createStackNavigator(
   { SignIn, SignUp },
-  { initialRouteName: 'SignUp', defaultNavigationOptions, transitionConfig }
+  { initialRouteName: 'SignIn', defaultNavigationOptions, transitionConfig }
 );
 // A Switch Navigator é feita para o fluxo de autenticação. (ler documentação)
 
@@ -27,7 +27,7 @@ const Routes = createAppContainer(
       Auth: AuthStack
     },
     {
-      initialRouteName: 'Auth'
+      initialRouteName: 'Splash'
     }
   )
 );

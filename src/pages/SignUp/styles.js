@@ -6,7 +6,7 @@ export default StyleSheet.create({
     flex: 1,
     padding: 40
   },
-  buttonContatiner: {
+  buttonContainer: {
     margin: 50,
     marginTop: 20
   },

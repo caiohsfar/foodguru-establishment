@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image } from 'react-native';
 
-const logo = require('../../assets/img/react.png');
+const logo = require('../../assets/img/logo.png');
 
 export default props => (
   <Image
