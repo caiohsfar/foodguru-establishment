@@ -57,3 +57,4 @@ buck-out/
 
 # Environment variables
 android/local.properties
+.env

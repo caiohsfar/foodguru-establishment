@@ -14,6 +14,7 @@ export default StyleSheet.create({
     backgroundColor: appTheme.COLOR
   },
   errorMessage: {
+    fontWeight: 'bold',
     alignSelf: 'center',
     marginTop: 20,
     fontSize: 15,

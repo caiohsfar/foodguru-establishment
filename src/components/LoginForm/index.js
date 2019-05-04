@@ -52,7 +52,7 @@ export default props => (
           buttonStyle={styles.button}
           titleStyle={styles.title}
           onPress={formikProps.handleSubmit}
-          title="Cadastrar"
+          title="Entrar"
           type="solid"
           loading={props.loadState}
         />

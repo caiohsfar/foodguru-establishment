@@ -1,5 +1,7 @@
 import cepApi from 'cep-promise';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+
+import Reactotron from 'reactotron-react-native';
 import {
   CEP_SUCCESS,
   CEP_FAILURE,
@@ -28,7 +30,7 @@ export const signUp = user => (dispatch) => {
       dispatch(signUpSuccess());
       NavigationService.navigate('SignIn');
     })
-    .catch(error => dispatch(signUpFailure(error.response.data.message)));
+    .catch(error => dispatch(signUpFailure(error)));
   // OUTRAS TRATATIVAS
 };
 // NAVEGAR ATÉ OUTRA TELA
@@ -36,10 +38,13 @@ export const signUpSuccess = () => ({
   type: SIGNUP_SUCCESS
 });
 
-export const signUpFailure = error => ({
-  type: SIGNUP_FAILURE,
-  payload: error
-});
+export const signUpFailure = (error) => {
+  const errorMessage = getErrorMessage(error);
+  return {
+    type: SIGNUP_FAILURE,
+    payload: errorMessage
+  };
+};
 
 export const cepLoading = () => ({
   type: CEP_LOADING
@@ -87,7 +92,7 @@ export const signIn = ({ email, password }) => (dispatch) => {
     })
     .catch((error) => {
       console.log(error.response);
-      dispatch(signInFailure(error.response.data.message));
+      dispatch(signInFailure(error));
     });
 };
 
@@ -95,7 +100,19 @@ export const signInSuccess = () => ({
   type: SIGNIN_SUCCESS
 });
 
-export const signInFailure = error => ({
-  type: SIGNIN_FAILURE,
-  payload: error
-});
+const getErrorMessage = (error) => {
+  if (!error.response) {
+    return 'Erro ao se conectar com o servidor.';
+  }
+  const { data } = error.response;
+
+  return data.message ? data.message : data;
+};
+
+export const signInFailure = (error) => {
+  const errorMessage = getErrorMessage(error);
+  return {
+    type: SIGNIN_FAILURE,
+    payload: errorMessage
+  };
+};

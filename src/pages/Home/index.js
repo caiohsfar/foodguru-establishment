@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, AsyncStorage } from 'react-native';
+import { View, Text } from 'react-native';
 import { Button } from 'react-native-elements';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Home extends Component {
   state = {
