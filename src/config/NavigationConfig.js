@@ -10,7 +10,7 @@ export const defaultNavigationOptions = {
 
 export const transitionConfig = () => ({
   transitionSpec: {
-    duration: 250,
+    duration: 500,
     easing: Easing.out(Easing.poly(4)),
     timing: Animated.timing,
     useNativeDriver: true

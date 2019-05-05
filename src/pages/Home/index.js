@@ -8,10 +8,6 @@ export default class Home extends Component {
     data: null
   };
 
-  static navigationOptions = {
-    headerTitle: 'Home'
-  };
-
   logOut = async () => {
     try {
       await AsyncStorage.removeItem('@FoodGuru:session');

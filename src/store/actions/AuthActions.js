@@ -1,7 +1,7 @@
 import cepApi from 'cep-promise';
 import AsyncStorage from '@react-native-community/async-storage';
+import getErrorMessage from '../../utils/getErrorMessage';
 
-import Reactotron from 'reactotron-react-native';
 import {
   CEP_SUCCESS,
   CEP_FAILURE,
@@ -99,15 +99,6 @@ export const signIn = ({ email, password }) => (dispatch) => {
 export const signInSuccess = () => ({
   type: SIGNIN_SUCCESS
 });
-
-const getErrorMessage = (error) => {
-  if (!error.response) {
-    return 'Erro ao se conectar com o servidor.';
-  }
-  const { data } = error.response;
-
-  return data.message ? data.message : data;
-};
 
 export const signInFailure = (error) => {
   const errorMessage = getErrorMessage(error);
