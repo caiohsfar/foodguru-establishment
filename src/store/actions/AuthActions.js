@@ -14,7 +14,7 @@ import {
   SIGNIN_FAILURE
 } from './types';
 import api from '../../services/api';
-import NavigationService from '../../services/NavigationService';
+import NavigationService from '../../navigation/NavigationService';
 
 export const isLoading = () => ({
   type: IS_LOADING
