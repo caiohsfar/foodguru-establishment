@@ -3,7 +3,7 @@ import { StatusBar, YellowBox } from 'react-native';
 import { Provider } from 'react-redux';
 import Store from './store';
 import Routes from './routes';
-import NavigationService from './services/NavigationService';
+import NavigationService from './navigation/NavigationService';
 import { appTheme } from './constants/styles';
 
 import('./config/ReactotronConfig');

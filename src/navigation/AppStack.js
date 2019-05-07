@@ -2,10 +2,9 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 import { View } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Home from '../pages/Home';
-import Sections from '../pages/Sections';
+import Orders from '../pages/Orders';
 import Products from '../pages/Products';
-import Settings from '../pages/Settings';
+import More from '../pages/More';
 import Tables from '../pages/Tables';
 
 import { appTheme } from '../constants/styles';
@@ -13,24 +12,13 @@ import { appTheme } from '../constants/styles';
 export default createMaterialBottomTabNavigator(
   // Route configs
   {
-    Home: {
-      screen: Home,
+    Orders: {
+      screen: Orders,
       navigationOptions: {
-        tabBarLabel: 'Home',
+        tabBarLabel: 'Pedidos',
         tabBarIcon: ({ tintColor }) => (
           <View>
-            <Icon style={[{ color: tintColor }]} size={25} name="home" />
-          </View>
-        )
-      }
-    },
-    Sections: {
-      screen: Sections,
-      navigationOptions: {
-        tabBarLabel: 'Sessões',
-        tabBarIcon: ({ tintColor }) => (
-          <View>
-            <Icon style={[{ color: tintColor }]} size={25} name="list" />
+            <Icon style={[{ color: tintColor }]} size={25} name="new-releases" />
           </View>
         )
       }
@@ -57,13 +45,13 @@ export default createMaterialBottomTabNavigator(
         )
       }
     },
-    Settings: {
-      screen: Settings,
+    More: {
+      screen: More,
       navigationOptions: {
-        tabBarLabel: 'Configurações',
+        tabBarLabel: 'Mais',
         tabBarIcon: ({ tintColor }) => (
           <View>
-            <Icon style={[{ color: tintColor }]} size={25} name="settings" />
+            <Icon style={[{ color: tintColor }]} size={25} name="menu" />
           </View>
         )
       }
@@ -73,7 +61,7 @@ export default createMaterialBottomTabNavigator(
   {
     shifting: true,
     backBehavior: 'order',
-    initialRouteName: 'Home',
+    initialRouteName: 'Orders',
     activeColor: '#ddd',
     inactiveColor: '#800000',
     barStyle: { backgroundColor: appTheme.COLOR }

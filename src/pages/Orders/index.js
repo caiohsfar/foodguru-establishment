@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { Button } from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
-
-export default class Home extends Component {
+// Vai ter 3 tabs
+export default class Orders extends Component {
   state = {
     data: null
   };
@@ -30,6 +30,7 @@ export default class Home extends Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Text>PEDIDOS FEITOS, PEDIDOS PRONTOS, PEDIDOS EM ANDAMENTO</Text>
         <Text>{this.state.data}</Text>
         <Button onPress={this.logOut} title="Deslogar" />
       </View>
