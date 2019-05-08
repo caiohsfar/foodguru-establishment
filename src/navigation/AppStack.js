@@ -61,7 +61,7 @@ export default createMaterialBottomTabNavigator(
   {
     shifting: true,
     backBehavior: 'order',
-    initialRouteName: 'Orders',
+    initialRouteName: 'Products',
     activeColor: '#ddd',
     inactiveColor: '#800000',
     barStyle: { backgroundColor: appTheme.COLOR }
