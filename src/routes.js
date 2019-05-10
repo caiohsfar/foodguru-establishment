@@ -13,7 +13,7 @@ const Routes = createAppContainer(
       Auth: AuthStack
     },
     {
-      initialRouteName: 'App'
+      initialRouteName: 'Splash'
     }
   )
 );

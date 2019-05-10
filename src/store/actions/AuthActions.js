@@ -15,6 +15,7 @@ import {
 } from './types';
 import api from '../../services/api';
 import NavigationService from '../../navigation/NavigationService';
+import Reactotron from 'reactotron-react-native';
 
 export const isLoading = () => ({
   type: IS_LOADING
@@ -71,6 +72,7 @@ export const clearAddress = () => ({
 });
 
 const createSession = async ({ token, establishment, hi }) => {
+  Reactotron.log("TOKEN:", { token, establishment, hi });
   try {
     await AsyncStorage.setItem('@FoodGuru:session', JSON.stringify({ token, establishment, hi }));
   } catch (error) {

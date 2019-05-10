@@ -1,37 +1,57 @@
 import React, { Component } from 'react';
-import { Text, View, KeyboardAvoidingView } from 'react-native';
+import { Text, View, KeyboardAvoidingView, FlatList } from 'react-native';
 import Modal from 'react-native-modal';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-elements';
 import ProductForm from '../../components/ProductForm';
 import styles from './styles';
-import {appTheme} from '../../constants/styles';
+import { appTheme } from '../../constants/styles';
+import { connect } from 'react-redux';
+import ProductItem from '../../components/ProductItem';
 
-export default class Products extends Component {
+import { create, fetch } from '../../store/actions/ProductActions';
+
+class Products extends Component {
   constructor(props) {
     super(props);
     this.setModalVisible = this.setModalVisible.bind(this);
+    this.state = {
+      modalVisible: false
+    };
   }
 
-  state = {
-    modalVisible: false
-  };
-
-  setModalVisible = (visible) => {
+  setModalVisible = visible => {
     this.setState({ modalVisible: visible });
   };
+  
+  _renderItem = ({ item }) => (
+    <ProductItem
+      id={item.id}
+      name={item.name}
+      price={item.price}
+      description={item.description}
+      image={item.image}
+
+    />
+  );
+  
+  _keyExtractor = (item, index) => item.id;
+  
+  componentDidMount = () => {
+    this.props.fetch();
+  }
 
   render() {
     return (
       <View style={styles.container}>
-        <KeyboardAvoidingView>
-          <Modal style={styles.modal} isVisible={this.state.modalVisible} useNativeDriver>
-              <ProductForm 
-                toggleModal={this.setModalVisible} 
-                onSubmit={this.props.onSubmit} 
-              />
-          </Modal>
-        </KeyboardAvoidingView>
+        <Modal style={styles.modal} isVisible={this.state.modalVisible}>
+          <ProductForm toggleModal={this.setModalVisible} onSubmit={this.props.create} />
+        </Modal>     
+        <FlatList
+          data={this.props.productList}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+        />
         <Icon
           containerStyle={styles.fab}
           name="add"
@@ -46,3 +66,13 @@ export default class Products extends Component {
     );
   }
 }
+const mapStateToProps = state => ({
+  loadState: state.ProductsReducer.loadState,
+  productList: state.ProductsReducer.productList,
+  createError: state.ProductsReducer.createError
+});
+
+export default connect(
+  mapStateToProps,
+  { create, fetch }
+)(Products);
