@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { Text, View, KeyboardAvoidingView, FlatList } from 'react-native';
+import {
+  View, FlatList
+} from 'react-native';
 import Modal from 'react-native-modal';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-elements';
+import { connect } from 'react-redux';
 import ProductForm from '../../components/ProductForm';
 import styles from './styles';
 import { appTheme } from '../../constants/styles';
-import { connect } from 'react-redux';
 import ProductItem from '../../components/ProductItem';
 
 import { create, fetch } from '../../store/actions/ProductActions';
@@ -20,10 +21,10 @@ class Products extends Component {
     };
   }
 
-  setModalVisible = visible => {
+  setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
   };
-  
+
   _renderItem = ({ item }) => (
     <ProductItem
       id={item.id}
@@ -34,9 +35,9 @@ class Products extends Component {
 
     />
   );
-  
+
   _keyExtractor = (item, index) => item.id;
-  
+
   componentDidMount = () => {
     this.props.fetch();
   }
@@ -46,7 +47,7 @@ class Products extends Component {
       <View style={styles.container}>
         <Modal style={styles.modal} isVisible={this.state.modalVisible}>
           <ProductForm toggleModal={this.setModalVisible} onSubmit={this.props.create} />
-        </Modal>     
+        </Modal>
         <FlatList
           data={this.props.productList}
           keyExtractor={this._keyExtractor}

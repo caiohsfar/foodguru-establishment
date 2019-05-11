@@ -3,9 +3,9 @@ import {
   View, Text, TouchableOpacity, Image, Alert
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
-import styles from './styles.js';
 import ImagePicker from 'react-native-image-picker';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import styles from './styles';
 
 
 const placeholder = require('../../assets/img/image-placeholder.png');
@@ -19,7 +19,7 @@ export default class ProductForm extends Component {
     errorName: '',
     errorPrice: '',
     errorDescription: ''
-    
+
   };
 
   pickImage = () => {
@@ -35,7 +35,7 @@ export default class ProductForm extends Component {
     };
     ImagePicker.showImagePicker(options, (response) => {
       console.log('Response = ', response);
-    
+
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -43,50 +43,54 @@ export default class ProductForm extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-
         this.setState({
-          image: response.uri,
+          image: response,
         });
       }
     });
   }
 
-  validate = ({ name, price, image, description }) => {  
+  validate = ({
+    name, price, image, description
+  }) => {
     let validation = true;
     if (!name) {
-      this.setState({ errorName: "Insira uma nome para o produto" });
+      this.setState({ errorName: 'Insira uma nome para o produto' });
       validation = false;
     } else {
-      this.setState({ errorName: "" });
+      this.setState({ errorName: '' });
     }
     if (!price) {
-      this.setState({ errorPrice: "Insira um preço para o produto" })
+      this.setState({ errorPrice: 'Insira um preço para o produto' });
       validation = false;
     } else {
-      this.setState({ errorPrice: "" })
+      this.setState({ errorPrice: '' });
     }
     if (!image) {
-      Alert.alert("Erro!", "Insira uma imagem para o produto.")
+      Alert.alert('Erro!', 'Insira uma imagem para o produto.');
       validation = false;
     }
     if (!description) {
-      this.setState({ errorDescription: "Insira uma descrição para o produto" })
+      this.setState({ errorDescription: 'Insira uma descrição para o produto' });
       validation = false;
     } else {
-      this.setState({ errorDescription: "" })
+      this.setState({ errorDescription: '' });
     }
     return validation;
   }
 
   _onSubmit = () => {
     if (this.validate(this.state)) {
-      const { name, price, image, description } = this.state;
+      const {
+        name, price, image, description
+      } = this.state;
       this.props.toggleModal(false);
-      this.props.onSubmit({ name, price, image, description });
+      this.props.onSubmit({
+        name, price, image, description
+      });
     }
-
   }
-  
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -94,13 +98,16 @@ export default class ProductForm extends Component {
           <View style={styles.containerPhoto}>
             <Text style={styles.text}>Cadastre um produto</Text>
             <TouchableOpacity onPress={this.pickImage}>
-              <Image style={styles.photo} source={ this.state.image ? {uri: this.state.image } :
-              placeholder}/>
+              <Image
+                style={styles.photo}
+                source={this.state.image ? { uri: this.state.image.uri }
+                  : placeholder}
+              />
             </TouchableOpacity>
           </View>
           <View style={styles.form}>
             <TextField
-              tintColor='grey'
+              tintColor="grey"
               errorColor="red"
               label="Nome"
               onChangeText={(name) => {
@@ -110,7 +117,7 @@ export default class ProductForm extends Component {
               error={this.state.errorName ? this.state.errorName : ''}
             />
             <TextField
-              tintColor='grey'
+              tintColor="grey"
               errorColor="red"
               label="Preço"
               keyboardType="decimal-pad"
@@ -121,7 +128,7 @@ export default class ProductForm extends Component {
               error={this.state.errorPrice ? this.state.errorPrice : ''}
             />
             <TextField
-              tintColor='grey'
+              tintColor="grey"
               errorColor="red"
               label="Descrição"
               onChangeText={(description) => {
