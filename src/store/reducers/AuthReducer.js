@@ -1,7 +1,7 @@
 import {
   CEP_SUCCESS,
   CEP_FAILURE,
-  IS_LOADING,
+  IS_LOADING_AUTH,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
   SIGNIN_SUCCESS,
@@ -26,7 +26,7 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case IS_LOADING:
+    case IS_LOADING_AUTH:
       return {
         ...state,
         loadState: true,

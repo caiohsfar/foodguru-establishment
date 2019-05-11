@@ -1,9 +1,9 @@
 import {
   CREATE_PRODUCT_FAILURE,
   CREATE_PRODUCT_SUCCESS,
-  IS_LOADING,
-  FETCH_FAILURE,
-  FETCH_SUCCESS,
+  IS_LOADING_FETCH_PRODUCTS,
+  FETCH_PRODUCTS_FAILURE,
+  FETCH_PRODUCTS_SUCCESS,
   DELETE_PRODUCT_SUCCESS
 } from '../actions/types';
 
@@ -15,7 +15,7 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case IS_LOADING:
+    case IS_LOADING_FETCH_PRODUCTS:
       return {
         ...state,
         fetchLoadState: true
@@ -31,14 +31,14 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         fetchLoadState: false
       };
-    case FETCH_SUCCESS:
+    case FETCH_PRODUCTS_SUCCESS:
       return {
         ...state,
         productList: action.payload,
         fetchLoadState: false,
         fetchError: false
       };
-    case FETCH_FAILURE:
+    case FETCH_PRODUCTS_FAILURE:
       return {
         ...state,
         fetchError: true,

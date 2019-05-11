@@ -4,17 +4,17 @@ import { Alert, Platform } from 'react-native';
 import getErrorMessage from '../../utils/getErrorMessage';
 
 import {
-  IS_LOADING,
+  IS_LOADING_FETCH_PRODUCTS,
   CREATE_PRODUCT_SUCCESS,
   CREATE_PRODUCT_FAILURE,
-  FETCH_SUCCESS,
-  FETCH_FAILURE
+  FETCH_PRODUCTS_SUCCESS,
+  FETCH_PRODUCTS_FAILURE
 } from './types';
 import api from '../../services/api';
 import { getUserId } from '../../services/userServices';
 
 export const isLoading = () => ({
-  type: IS_LOADING
+  type: IS_LOADING_FETCH_PRODUCTS
 });
 
 export const create = product => async (dispatch) => {
@@ -71,14 +71,14 @@ export const fetch = () => async (dispatch) => {
 };
 // NAVEGAR ATÉ OUTRA TELA
 export const fetchSuccess = list => ({
-  type: FETCH_SUCCESS,
+  type: FETCH_PRODUCTS_SUCCESS,
   payload: list
 });
 
 export const fetchFailure = (error) => {
   const errorMessage = getErrorMessage(error);
   return {
-    type: FETCH_FAILURE,
+    type: FETCH_PRODUCTS_FAILURE,
     payload: errorMessage
   };
 };

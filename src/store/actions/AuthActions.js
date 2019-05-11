@@ -6,7 +6,7 @@ import {
   CEP_SUCCESS,
   CEP_FAILURE,
   CEP_LOADING,
-  IS_LOADING,
+  IS_LOADING_AUTH,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
   CLEAR_ADDRESS,
@@ -18,7 +18,7 @@ import NavigationService from '../../navigation/NavigationService';
 import Reactotron from 'reactotron-react-native';
 
 export const isLoading = () => ({
-  type: IS_LOADING
+  type: IS_LOADING_AUTH
 });
 
 export const signUp = user => (dispatch) => {
