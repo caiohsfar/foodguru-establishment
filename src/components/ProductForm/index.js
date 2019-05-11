@@ -44,7 +44,7 @@ export default class ProductForm extends Component {
         console.log('User tapped custom button: ', response.customButton);
       } else {
         this.setState({
-          image: response,
+          image: response.uri,
         });
       }
     });
@@ -100,7 +100,7 @@ export default class ProductForm extends Component {
             <TouchableOpacity onPress={this.pickImage}>
               <Image
                 style={styles.photo}
-                source={this.state.image ? { uri: this.state.image.uri }
+                source={this.state.image ? { uri: this.state.image }
                   : placeholder}
               />
             </TouchableOpacity>
