@@ -11,7 +11,7 @@ export const getUserId = async () => {
 
 export const getUserSession = async () => {
   try {
-    return JSON.parse(await AsyncStorage.get('@FoodGuru:session'));
+    return JSON.parse(await AsyncStorage.getItem('@FoodGuru:session'));
   } catch (e) {
     return null;
   }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import Reactotron from 'reactotron-react-native';
+import reactotron from 'reactotron-react-native';
 import styles from './styles';
 import api from '../../services/api';
 /*
@@ -13,20 +13,22 @@ import Logo from '../../components/Logo';
 
 export default class Splash extends Component {
   isAuth = async () => {
+    let session = null;
     try {
-      const session = JSON.parse(await AsyncStorage.getItem('@FoodGuru:session'));
-      api.defaults.headers.common['x-access-token'] = session.token;
-      api.defaults.headers.common.hi = session.hi;
-      return session;
+      session = JSON.parse(await AsyncStorage.getItem('@FoodGuru:session'));
     } catch (e) {
-      return null;
+      reactotron.log(e);
     }
+    return session;
   };
 
   componentDidMount = () => {
     const { navigation } = this.props;
     setTimeout(() => {
-      if (this.isAuth() !== null) {
+      const session = this.isAuth();
+      if (!session) {
+        api.defaults.headers.common['x-access-token'] = session.token;
+        api.defaults.headers.common.hi = session.hi;
         navigation.navigate('App');
       } else {
         navigation.navigate('Auth');
