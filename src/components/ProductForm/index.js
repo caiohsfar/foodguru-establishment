@@ -28,6 +28,8 @@ export default class ProductForm extends Component {
       maxWidth: 500,
       maxHeight: 500,
       title: 'Selecione uma imagem',
+      takePhotoButtonTitle: 'Camera',
+      chooseFromLibraryButtonTitle: 'Galeria',
       storageOptions: {
         skipBackup: true,
         path: 'images',
