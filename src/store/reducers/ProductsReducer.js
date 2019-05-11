@@ -1,4 +1,3 @@
-import { isConditional } from '@babel/types';
 import {
   CREATE_PRODUCT_FAILURE,
   CREATE_PRODUCT_SUCCESS,
@@ -9,9 +8,9 @@ import {
 } from '../actions/types';
 
 const INITIAL_STATE = {
-  loadState: false,
-  productList: [],
-  onCreateError: false
+  fetchError: false,
+  fetchLoadState: false,
+  productList: []
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -19,34 +18,38 @@ export default (state = INITIAL_STATE, action) => {
     case IS_LOADING:
       return {
         ...state,
-        loadState: true,
-        createError: '',
-        signInErrorMessage: ''
+        fetchLoadState: true
       };
     case CREATE_PRODUCT_SUCCESS:
       return {
         ...state,
         productList: [...state.productList, action.payload],
-        loadState: false,
-        onCreateError: false
+        fetchLoadState: false
       };
     case CREATE_PRODUCT_FAILURE:
       return {
         ...state,
-        loadState: false,
-        onCreateError: true
+        fetchLoadState: false
       };
     case FETCH_SUCCESS:
       return {
         ...state,
-        productList: action.payload
+        productList: action.payload,
+        fetchLoadState: false,
+        fetchError: false
+      };
+    case FETCH_FAILURE:
+      return {
+        ...state,
+        fetchError: true,
+        fetchLoadState: false
       };
     case DELETE_PRODUCT_SUCCESS:
       return {
         ...state,
-        productList: state.productList.filter(product => product.id != action.payload.id),
+        productList: state.productList.filter(product => product.id !== action.payload.id),
         loadState: false,
-        onCreateError: false
+        fetchLoadState: false
       };
     default:
       return state;

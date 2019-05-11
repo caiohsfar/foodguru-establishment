@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import {
-  View, FlatList
+  View, FlatList, Text, ActivityIndicator
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { Icon } from 'react-native-elements';
+import { Icon, Button } from 'react-native-elements';
 import { connect } from 'react-redux';
+import reactotron from 'reactotron-react-native';
 import ProductForm from '../../components/ProductForm';
 import styles from './styles';
 import { appTheme } from '../../constants/styles';
@@ -42,17 +43,42 @@ class Products extends Component {
     this.props.fetch();
   }
 
+  renderList = () => {
+    if (this.props.fetchLoadState) {
+      return (
+        <ActivityIndicator color={appTheme.COLOR} size="large" />
+      );
+    }
+    if (this.props.fetchError) {
+      return (
+        <View style={styles.reloadContainer}>
+          <Text style={styles.errorMessage}> Ops! Sem conexão. </Text>
+          <Button
+            onPress={() => this.props.fetch()}
+            title="Regarregar"
+            type="solid"
+            containerStyle={styles.reloadButtonStyle}
+            buttonStyle={{ backgroundColor: appTheme.COLOR }}
+          />
+        </View>
+      );
+    }
+    return (
+      <FlatList
+        data={this.props.productList}
+        keyExtractor={this._keyExtractor}
+        renderItem={this._renderItem}
+      />
+    );
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Modal style={styles.modal} isVisible={this.state.modalVisible}>
           <ProductForm toggleModal={this.setModalVisible} onSubmit={this.props.create} />
         </Modal>
-        <FlatList
-          data={this.props.productList}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderItem}
-        />
+        {this.renderList()}
         <Icon
           containerStyle={styles.fab}
           name="add"
@@ -67,11 +93,14 @@ class Products extends Component {
     );
   }
 }
-const mapStateToProps = state => ({
-  loadState: state.ProductsReducer.loadState,
-  productList: state.ProductsReducer.productList,
-  createError: state.ProductsReducer.createError
-});
+const mapStateToProps = (state) => {
+  reactotron.log(state);
+  return {
+    fetchError: state.ProductsReducer.fetchError,
+    fetchLoadState: state.ProductsReducer.fetchLoadState,
+    productList: state.ProductsReducer.productList,
+  };
+};
 
 export default connect(
   mapStateToProps,

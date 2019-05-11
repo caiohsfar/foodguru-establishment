@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import Reactotron from 'reactotron-react-native';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import getErrorMessage from '../../utils/getErrorMessage';
 
 import {
@@ -11,7 +11,6 @@ import {
   FETCH_FAILURE
 } from './types';
 import api from '../../services/api';
-import NavigationService from '../../navigation/NavigationService';
 import { getUserId } from '../../services/userServices';
 
 export const isLoading = () => ({
@@ -23,6 +22,7 @@ export const create = product => async (dispatch) => {
   dispatch(isLoading());
   const idEstablishment = await getUserId();
   Reactotron.log('product', product);
+
   api
     .post('/products', { product, id: idEstablishment })
     .then((response) => {
@@ -32,8 +32,18 @@ export const create = product => async (dispatch) => {
     .catch(error => dispatch(createFailure(error)));
   // OUTRAS TRATATIVAS
 };
-// NAVEGAR ATÉ OUTRA TELA
-export const createSuccess = (product) => ({
+
+const upload = ({ image, idEstablishment }) => async (dispatch) => {
+  const data = new FormData();
+  data.append('image', {
+    name: image.fileName,
+    type: image.type,
+    uri: Platform.OS === 'android' ? image.uri : image.uri.replace('file://', '')
+  });
+  data.append('id', idEstablishment);
+};
+
+export const createSuccess = product => ({
   type: CREATE_PRODUCT_SUCCESS,
   payload: product
 });
@@ -55,7 +65,6 @@ export const fetch = () => async (dispatch) => {
     .then((response) => {
       Reactotron.log('LISTA PRODU', response);
       dispatch(fetchSuccess(response.data));
-      // NavigationService.navigate('SignIn');
     })
     .catch(error => dispatch(fetchFailure(error)));
   // OUTRAS TRATATIVAS
@@ -68,7 +77,6 @@ export const fetchSuccess = list => ({
 
 export const fetchFailure = (error) => {
   const errorMessage = getErrorMessage(error);
-  Alert.alert(errorMessage);
   return {
     type: FETCH_FAILURE,
     payload: errorMessage
