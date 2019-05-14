@@ -8,7 +8,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import styles from './styles';
 
 
-const placeholder = require('../../assets/img/image-placeholder.png');
+const placeholder = require('../../../assets/img/image-placeholder.png');
 
 export default class ProductForm extends Component {
   state = {
