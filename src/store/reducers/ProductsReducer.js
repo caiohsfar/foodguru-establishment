@@ -1,16 +1,23 @@
+import reactotron from 'reactotron-react-native';
 import {
   CREATE_PRODUCT_FAILURE,
   CREATE_PRODUCT_SUCCESS,
   IS_LOADING_FETCH_PRODUCTS,
   FETCH_PRODUCTS_FAILURE,
   FETCH_PRODUCTS_SUCCESS,
-  DELETE_PRODUCT_SUCCESS
+  REMOVE_PRODUCT_SUCCESS,
+  REMOVE_PRODUCT_FAILURE,
+  TOGGLE_PRODUCT,
+  EDIT_PRODUCT_SUCCESS,
+  EDIT_PRODUCT_FAILURE
 } from '../actions/types';
 
 const INITIAL_STATE = {
   fetchError: false,
   fetchLoadState: false,
-  productList: []
+  productList: [],
+  selecteds: new Map(),
+  selectedCount: 0
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -44,11 +51,32 @@ export default (state = INITIAL_STATE, action) => {
         fetchError: true,
         fetchLoadState: false
       };
-    case DELETE_PRODUCT_SUCCESS:
+    case REMOVE_PRODUCT_SUCCESS:
       return {
         ...state,
-        productList: state.productList.filter(product => product.id !== action.payload.id),
-        loadState: false,
+        selecteds: new Map(),
+        productList: state.productList.filter(product => product.id !== action.payload),
+        selectedCount: state.selectedCount - 1
+      };
+    case TOGGLE_PRODUCT:
+      return {
+        ...state,
+        selecteds: new Map(state.selecteds).set(action.payload.id, action.payload.status),
+        selectedCount: action.payload.status ? state.selectedCount + 1 : state.selectedCount - 1
+      };
+    case EDIT_PRODUCT_SUCCESS:
+      return {
+        ...state,
+        fetchLoadState: false,
+        productList: state.productList.map(
+          product => (product.id === action.payload.id
+            ? action.payload
+            : product)
+        )
+      };
+    case EDIT_PRODUCT_FAILURE:
+      return {
+        ...state,
         fetchLoadState: false
       };
     default:

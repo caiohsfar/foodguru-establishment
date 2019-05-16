@@ -1,43 +1,102 @@
 import React, { Component } from 'react';
 import {
-  View, FlatList, Text, ActivityIndicator
+  View, Text, ActivityIndicator, Animated, Dimensions, Easing
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { Icon, Button } from 'react-native-elements';
 import { connect } from 'react-redux';
 import reactotron from 'reactotron-react-native';
-import ProductForm from '../../components/ProductForm';
+import ProductForm from '../../components/Product/ProductForm';
 import styles from './styles';
 import { appTheme } from '../../constants/styles';
-import ProductItem from '../../components/ProductItem';
-
-import { create, fetch } from '../../store/actions/ProductActions';
+import ActionHeader from '../../components/Product/ProductsHeaders/ActionHeader';
+import DefaultHeader from '../../components/Product/ProductsHeaders/DefaultHeader';
+import {
+  create, fetch, toggle, remove, edit
+} from '../../store/actions/ProductActions';
+import ProductList from '../../components/Product/ProductList';
 
 class Products extends Component {
   constructor(props) {
     super(props);
-    this.setModalVisible = this.setModalVisible.bind(this);
     this.state = {
-      modalVisible: false
+      modalCreateVisible: false,
+      modalEditVisible: false,
+      defaultSpring: new Animated.Value(1),
+      // BUG DO REAT NATIVE
+      actionSpring: new Animated.Value(0.01),
+      selectedProductData: null
     };
   }
 
-  setModalVisible = (visible) => {
-    this.setState({ modalVisible: visible });
+  onPressSelectAll = () => {
+    this.toggleAll(true);
+  }
+
+  toggleAll = (status) => {
+    const { productList, selecteds } = this.props;
+    productList.forEach((product) => {
+      if (status && !selecteds.get(product.id)) {
+        this.props.toggle(product.id, status);
+      } else if (!status && selecteds.get(product.id)) {
+        this.props.toggle(product.id, status);
+      }
+    });
+  }
+
+  onPressRemove = () => {
+    const { selecteds } = this.props;
+    for (const [id, selected] of selecteds.entries()) {
+      if (selected) {
+        this.props.remove(id);
+      }
+    }
+  }
+
+  onPressEdit = () => {
+    this.setModalEditVisible(true);
+    this.toggleAll(false);
+  }
+
+  onPressExit = () => {
+    this.toggleAll(false);
+    this.showActionMode(false);
+  }
+
+  showActionMode = (show) => {
+    const toValueDefault = show ? 0 : 1;
+    const toValueAction = show ? 1 : 0;
+    Animated.sequence([
+      Animated.timing( // Animate over time
+        this.state.defaultSpring, // The animated value to drive
+        {
+          toValue: toValueDefault, // Animate to opacity: 1 (opaque)
+          duration: 150,
+          easing: Easing.ease,
+          useNativeDriver: true // Make it take a while
+        }
+      ),
+      Animated.timing( // Animate over time
+        this.state.actionSpring, // The animated value to drive
+        {
+          toValue: toValueAction, // Animate to opacity: 1 (opaque)
+          duration: 150,
+          easing: Easing.ease,
+          useNativeDriver: true // Make it take a while
+        }
+      )
+    ]).start();
+  }
+
+  setModalCreateVisible = (visible) => {
+    this.setState({ modalCreateVisible: visible });
   };
 
-  _renderItem = ({ item }) => (
-    <ProductItem
-      id={item.id}
-      name={item.name}
-      price={item.price}
-      description={item.description}
-      image={item.image}
-
-    />
-  );
-
-  _keyExtractor = (item, index) => item.id;
+  setModalEditVisible = (visible) => {
+    const selectedProductData = this.getSelectedProductData()
+    this.setState({ selectedProductData })
+    this.setState({ modalEditVisible: visible });
+  };
 
   componentDidMount = () => {
     this.props.fetch();
@@ -55,7 +114,7 @@ class Products extends Component {
           <Text style={styles.errorMessage}> Ops! Sem conexão. </Text>
           <Button
             onPress={() => this.props.fetch()}
-            title="Regarregar"
+            title="Recarregar"
             type="solid"
             containerStyle={styles.reloadButtonStyle}
             buttonStyle={{ backgroundColor: appTheme.COLOR }}
@@ -64,19 +123,63 @@ class Products extends Component {
       );
     }
     return (
-      <FlatList
+      <ProductList
         data={this.props.productList}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderItem}
+        showActionMode={this.showActionMode}
       />
     );
   }
 
+  renderHeader = () => {
+    const { defaultSpring, actionSpring } = this.state;
+    return (
+      <View style={{ top: 0, right: 0 }}>
+        <Animated.View
+          style={{ opacity: defaultSpring, transform: [{ scale: defaultSpring }] }}
+        >
+          <DefaultHeader />
+        </Animated.View>
+        <Animated.View
+          style={{
+            opacity: actionSpring,
+            position: 'absolute',
+            width: Dimensions.get('window').width,
+            transform: [{ scale: actionSpring }]
+          }}
+        >
+          <ActionHeader
+            count={this.props.selectedCount}
+            onPressExit={this.onPressExit}
+            onPressRemove={this.onPressRemove}
+            onPressEdit={this.onPressEdit}
+            onPressSelectAll={this.onPressSelectAll}
+          />
+        </Animated.View>
+      </View>
+    );
+  }
+
+  getSelectedProductData = () => {
+    const { selecteds, productList } = this.props;
+    for (const [id, selected] of selecteds.entries()) {
+      if (selected) {
+        reactotron.log(id);
+        return productList.filter(product => product.id === id)[0];
+      }
+    }
+  }
+
+
   render() {
+    const { modalCreateVisible, modalEditVisible } = this.state;
     return (
       <View style={styles.container}>
-        <Modal style={styles.modal} isVisible={this.state.modalVisible}>
-          <ProductForm toggleModal={this.setModalVisible} onSubmit={this.props.create} />
+        {this.renderHeader()}
+        <Modal style={styles.modal} isVisible={modalCreateVisible} useNativeDriver>
+          <ProductForm toggleModal={this.setModalCreateVisible} onSubmit={this.props.create} />
+        </Modal>
+        <Modal style={styles.modal} isVisible={modalEditVisible} useNativeDriver>
+          <ProductForm data={this.state.selectedProductData} toggleModal={this.setModalEditVisible} onSubmit={this.props.edit} />
         </Modal>
         {this.renderList()}
         <Icon
@@ -86,23 +189,25 @@ class Products extends Component {
           reverse
           color={appTheme.COLOR}
           onPress={() => {
-            this.setModalVisible(true);
+            this.setModalCreateVisible(true);
           }}
         />
       </View>
     );
   }
 }
-const mapStateToProps = (state) => {
-  reactotron.log(state);
-  return {
-    fetchError: state.ProductsReducer.fetchError,
-    fetchLoadState: state.ProductsReducer.fetchLoadState,
-    productList: state.ProductsReducer.productList,
-  };
-};
+
+const mapStateToProps = state => ({
+  fetchError: state.ProductsReducer.fetchError,
+  fetchLoadState: state.ProductsReducer.fetchLoadState,
+  productList: state.ProductsReducer.productList,
+  selecteds: state.ProductsReducer.selecteds,
+  selectedCount: state.ProductsReducer.selectedCount,
+});
 
 export default connect(
   mapStateToProps,
-  { create, fetch }
+  {
+    create, fetch, toggle, remove, edit
+  }
 )(Products);

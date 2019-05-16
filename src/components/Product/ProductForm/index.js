@@ -6,11 +6,14 @@ import { TextField } from 'react-native-material-textfield';
 import ImagePicker from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styles from './styles';
+import reactotron from 'reactotron-react-native'
 
-const placeholder = require('../../assets/img/image-placeholder.png');
+
+const placeholder = require('../../../assets/img/image-placeholder.png');
 
 export default class ProductForm extends Component {
   state = {
+    id:null,
     name: '',
     price: '',
     image: null,
@@ -18,8 +21,15 @@ export default class ProductForm extends Component {
     errorName: '',
     errorPrice: '',
     errorDescription: ''
-
   };
+
+  componentDidMount() {
+    const { data } = this.props;
+    reactotron.log(data);
+    if (data) {
+      this.setState({...data, price: data.price.toString()})
+    }
+  }
 
   pickImage = () => {
     const options = {
@@ -83,11 +93,11 @@ export default class ProductForm extends Component {
   _onSubmit = () => {
     if (this.validate(this.state)) {
       const {
-        name, price, image, description
+        id, name, price, image, description
       } = this.state;
       this.props.toggleModal(false);
       this.props.onSubmit({
-        name, price, image, description
+        name, price, image, description, id
       });
     }
   }
@@ -97,7 +107,7 @@ export default class ProductForm extends Component {
       <View style={{ flex: 1 }}>
         <KeyboardAwareScrollView>
           <View style={styles.containerPhoto}>
-            <Text style={styles.text}>Cadastre um produto</Text>
+            <Text style={styles.text}>{this.props.data ? 'Edite':'Cadastre'} um produto</Text>
             <TouchableOpacity onPress={this.pickImage}>
               <Image
                 style={styles.photo}
@@ -146,7 +156,7 @@ export default class ProductForm extends Component {
               <Text style={styles.cancel}>CANCELAR</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={this._onSubmit}>
-              <Text style={styles.confirm}>CADASTRAR</Text>
+              <Text style={styles.confirm}>CONFIRMAR</Text>
             </TouchableOpacity>
           </View>
         </KeyboardAwareScrollView>

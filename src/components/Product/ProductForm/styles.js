@@ -1,5 +1,5 @@
 import { StyleSheet, PixelRatio } from 'react-native';
-import { appTheme } from '../../constants/styles';
+import { appTheme } from '../../../constants/styles';
 
 export default StyleSheet.create({
   containerPhoto: { flex: 2, alignItems: 'center', justifyContent: 'flex-start' },

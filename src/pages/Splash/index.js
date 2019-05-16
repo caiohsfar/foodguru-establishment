@@ -13,10 +13,10 @@ import { getUserSession } from '../../services/userServices';
 import Logo from '../../components/Logo';
 
 export default class Splash extends Component {
-  isAuth = async () => {
-    const session = await getUserSession();
-    return session;
-  };
+  // isAuth = async () => {
+  //   const session = await getUserSession();
+  //   return session;
+  // };
 
   componentDidMount = () => {
     const { navigation } = this.props;
