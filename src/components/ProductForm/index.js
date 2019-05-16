@@ -3,43 +3,9 @@ import {
   View, Text, TouchableOpacity, Image, Alert
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
-<<<<<<< HEAD
-import styles from './styles.js';
-import Logo from '../Logo';
-
-export default props => (
-  <View style={{ flex: 1 }}>
-    <View style={styles.containerPhoto}>
-      <Text style={styles.text}>Cadastre um produto</Text>
-      <TouchableOpacity style={styles.photo}>
-        <Logo height={60} width={60} resizeMode="contain" />
-      </TouchableOpacity>
-    </View>
-    <View style={styles.form}>
-      <TextField 
-        label='Nome'
-         />
-      <TextField 
-        label='Preço'/>
-      <TextField
-        label='Descricão' />
-      <Picker />
-    </View>
-    <View style={styles.buttons}>
-      <TouchableOpacity onPress={() => props.toggleModal(false)}>
-        <Text>CANCELAR</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => props.toggleModal(false)}>
-        <Text>CADASTRAR</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-);
-=======
 import ImagePicker from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styles from './styles';
-
 
 const placeholder = require('../../assets/img/image-placeholder.png');
 
@@ -188,4 +154,3 @@ export default class ProductForm extends Component {
     );
   }
 }
->>>>>>> c9fcdb8b01d864b53a5723911cb767c031eca2fe
