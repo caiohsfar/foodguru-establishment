@@ -1,5 +1,3 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import Reactotron from 'reactotron-react-native';
 import { Alert, Platform } from 'react-native';
 import reactotron from 'reactotron-react-native';
 import getErrorMessage from '../../utils/getErrorMessage';
@@ -13,10 +11,36 @@ import {
   REMOVE_PRODUCT_FAILURE,
   REMOVE_PRODUCT_SUCCESS,
   TOGGLE_PRODUCT,
+  EDIT_PRODUCT_FAILURE,
+  EDIT_PRODUCT_SUCCESS
 } from './types';
 
 import api from '../../services/api';
 import { getUserId } from '../../services/userServices';
+
+export const edit = product => async (dispatch) => {
+  dispatch(isLoading());
+  try {
+    await api.put(`/products/${product.id}`, product);
+    dispatch(onEditSuccess(product));
+  } catch (error) {
+    dispatch(onEditFailure(error));
+  }
+};
+
+const onEditFailure = (error) => {
+  const message = getErrorMessage(error);
+  alert(message);
+  return {
+    type: EDIT_PRODUCT_FAILURE,
+    payload: message
+  };
+};
+
+const onEditSuccess = product => ({
+  type: EDIT_PRODUCT_SUCCESS,
+  payload: product
+});
 
 export const remove = id => async (dispatch) => {
   try {

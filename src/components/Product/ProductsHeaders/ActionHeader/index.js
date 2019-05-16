@@ -7,7 +7,10 @@ const ActionHeader = props => (
     placement="right"
     containerStyle={{ backgroundColor: '#ff4d4d', height: 65, justifyContent: 'center' }}
   >
-    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
+    <View style={{
+      flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20
+    }}
+    >
       <Icon
         type="material"
         name="arrow-back"
@@ -15,7 +18,13 @@ const ActionHeader = props => (
         onPress={props.onPressExit}
         size={30}
       />
-      <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#ddd', marginLeft:10 }}>{props.count}</Text>
+      <Text style={{
+        fontSize: 20, fontWeight: 'bold', color: '#ddd', marginLeft: 10
+      }}
+      >
+        {props.count}
+
+      </Text>
     </View>
 
     <View
@@ -35,14 +44,19 @@ const ActionHeader = props => (
         color="#ddd"
         onPress={props.onPressRemove}
       />
-      <Icon
-        containerStyle={{ marginHorizontal: 10, marginBottom: 10 }}
-        size={27}
-        type="material"
-        name="edit"
-        color="#ddd"
-        onPress={props.onPressEdit}
-      />
+      {
+        props.count === 1
+        && (
+        <Icon
+          containerStyle={{ marginHorizontal: 10, marginBottom: 10 }}
+          size={27}
+          type="material"
+          name="edit"
+          color="#ddd"
+          onPress={props.onPressEdit}
+        />
+        )}
+
       <Icon
         containerStyle={{ marginHorizontal: 10, marginBottom: 10 }}
         size={27}

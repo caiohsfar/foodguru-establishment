@@ -12,19 +12,20 @@ import { appTheme } from '../../constants/styles';
 import ActionHeader from '../../components/Product/ProductsHeaders/ActionHeader';
 import DefaultHeader from '../../components/Product/ProductsHeaders/DefaultHeader';
 import {
- create, fetch, toggle, remove, select, unselect 
+  create, fetch, toggle, remove, edit
 } from '../../store/actions/ProductActions';
 import ProductList from '../../components/Product/ProductList';
 
 class Products extends Component {
   constructor(props) {
     super(props);
-    this.setModalVisible = this.setModalVisible.bind(this);
     this.state = {
-      modalVisible: false,
+      modalCreateVisible: false,
+      modalEditVisible: false,
       defaultSpring: new Animated.Value(1),
       // BUG DO REAT NATIVE
       actionSpring: new Animated.Value(0.01),
+      selectedProductData: null
     };
   }
 
@@ -33,11 +34,11 @@ class Products extends Component {
   }
 
   toggleAll = (status) => {
-    const { productList } = this.props;
+    const { productList, selecteds } = this.props;
     productList.forEach((product) => {
-      if (status && !this.props.selecteds.get(product.id)) {
+      if (status && !selecteds.get(product.id)) {
         this.props.toggle(product.id, status);
-      } else if (!status && this.props.selecteds.get(product.id)) {
+      } else if (!status && selecteds.get(product.id)) {
         this.props.toggle(product.id, status);
       }
     });
@@ -53,19 +54,8 @@ class Products extends Component {
   }
 
   onPressEdit = () => {
-
-  }
-
-  getSelectedCount = () => {
-    const { selecteds } = this.props;
-    let length = 0;
-    const items = [...selecteds.values()];
-    items.forEach((selected) => {
-      if (selected) {
-        length += 1;
-      }
-    });
-    return length;
+    this.setModalEditVisible(true);
+    this.toggleAll(false);
   }
 
   onPressExit = () => {
@@ -98,8 +88,14 @@ class Products extends Component {
     ]).start();
   }
 
-  setModalVisible = (visible) => {
-    this.setState({ modalVisible: visible });
+  setModalCreateVisible = (visible) => {
+    this.setState({ modalCreateVisible: visible });
+  };
+
+  setModalEditVisible = (visible) => {
+    const selectedProductData = this.getSelectedProductData()
+    this.setState({ selectedProductData })
+    this.setState({ modalEditVisible: visible });
   };
 
   componentDidMount = () => {
@@ -118,7 +114,7 @@ class Products extends Component {
           <Text style={styles.errorMessage}> Ops! Sem conexão. </Text>
           <Button
             onPress={() => this.props.fetch()}
-            title="Regarregar"
+            title="Recarregar"
             type="solid"
             containerStyle={styles.reloadButtonStyle}
             buttonStyle={{ backgroundColor: appTheme.COLOR }}
@@ -137,7 +133,7 @@ class Products extends Component {
   renderHeader = () => {
     const { defaultSpring, actionSpring } = this.state;
     return (
-      <View style={{ top: 0 }}>
+      <View style={{ top: 0, right: 0 }}>
         <Animated.View
           style={{ opacity: defaultSpring, transform: [{ scale: defaultSpring }] }}
         >
@@ -151,18 +147,39 @@ class Products extends Component {
             transform: [{ scale: actionSpring }]
           }}
         >
-          <ActionHeader count={this.props.selectedCount} onPressExit={this.onPressExit} onPressRemove={this.onPressRemove} onPressEdit={this.onPressEdit} onPressSelectAll={this.onPressSelectAll} />
+          <ActionHeader
+            count={this.props.selectedCount}
+            onPressExit={this.onPressExit}
+            onPressRemove={this.onPressRemove}
+            onPressEdit={this.onPressEdit}
+            onPressSelectAll={this.onPressSelectAll}
+          />
         </Animated.View>
       </View>
     );
   }
 
+  getSelectedProductData = () => {
+    const { selecteds, productList } = this.props;
+    for (const [id, selected] of selecteds.entries()) {
+      if (selected) {
+        reactotron.log(id);
+        return productList.filter(product => product.id === id)[0];
+      }
+    }
+  }
+
+
   render() {
+    const { modalCreateVisible, modalEditVisible } = this.state;
     return (
       <View style={styles.container}>
         {this.renderHeader()}
-        <Modal style={styles.modal} isVisible={this.state.modalVisible} useNativeDriver>
-          <ProductForm toggleModal={this.setModalVisible} onSubmit={this.props.create} />
+        <Modal style={styles.modal} isVisible={modalCreateVisible} useNativeDriver>
+          <ProductForm toggleModal={this.setModalCreateVisible} onSubmit={this.props.create} />
+        </Modal>
+        <Modal style={styles.modal} isVisible={modalEditVisible} useNativeDriver>
+          <ProductForm data={this.state.selectedProductData} toggleModal={this.setModalEditVisible} onSubmit={this.props.edit} />
         </Modal>
         {this.renderList()}
         <Icon
@@ -172,7 +189,7 @@ class Products extends Component {
           reverse
           color={appTheme.COLOR}
           onPress={() => {
-            this.setModalVisible(true);
+            this.setModalCreateVisible(true);
           }}
         />
       </View>
@@ -180,17 +197,17 @@ class Products extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-    fetchError: state.ProductsReducer.fetchError,
-    fetchLoadState: state.ProductsReducer.fetchLoadState,
-    productList: state.ProductsReducer.productList,
-    selecteds: state.ProductsReducer.selecteds,
-    selectedCount: state.ProductsReducer.selectedCount,
-  });
+const mapStateToProps = state => ({
+  fetchError: state.ProductsReducer.fetchError,
+  fetchLoadState: state.ProductsReducer.fetchLoadState,
+  productList: state.ProductsReducer.productList,
+  selecteds: state.ProductsReducer.selecteds,
+  selectedCount: state.ProductsReducer.selectedCount,
+});
 
 export default connect(
   mapStateToProps,
   {
- create, fetch, toggle, remove, select 
-}
+    create, fetch, toggle, remove, edit
+  }
 )(Products);

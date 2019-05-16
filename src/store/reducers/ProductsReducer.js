@@ -8,8 +8,8 @@ import {
   REMOVE_PRODUCT_SUCCESS,
   REMOVE_PRODUCT_FAILURE,
   TOGGLE_PRODUCT,
-  SELECT_PRODUCT,
-  UNSELECT_PRODUCT
+  EDIT_PRODUCT_SUCCESS,
+  EDIT_PRODUCT_FAILURE
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -52,7 +52,6 @@ export default (state = INITIAL_STATE, action) => {
         fetchLoadState: false
       };
     case REMOVE_PRODUCT_SUCCESS:
-      reactotron.log('remove product', action.payload);
       return {
         ...state,
         selecteds: new Map(),
@@ -64,6 +63,21 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         selecteds: new Map(state.selecteds).set(action.payload.id, action.payload.status),
         selectedCount: action.payload.status ? state.selectedCount + 1 : state.selectedCount - 1
+      };
+    case EDIT_PRODUCT_SUCCESS:
+      return {
+        ...state,
+        fetchLoadState: false,
+        productList: state.productList.map(
+          product => (product.id === action.payload.id
+            ? action.payload
+            : product)
+        )
+      };
+    case EDIT_PRODUCT_FAILURE:
+      return {
+        ...state,
+        fetchLoadState: false
       };
     default:
       return state;
