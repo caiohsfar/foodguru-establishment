@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import reactotron from 'reactotron-react-native';
 import styles from './styles';
+import api from '../../services/api';
+import { getUserSession } from '../../services/userServices';
 /*
     Tela que aparecerá e decidirá
     se o usuário deve ir pra tela de login ou pra Home;
@@ -11,17 +14,18 @@ import Logo from '../../components/Logo';
 
 export default class Splash extends Component {
   isAuth = async () => {
-    try {
-      return await AsyncStorage.getItem('@FoodGuru:session');
-    } catch (e) {
-      return null;
-    }
+    const session = await getUserSession();
+    return session;
   };
 
   componentDidMount = () => {
     const { navigation } = this.props;
-    setTimeout(() => {
-      if (this.isAuth() === null) {
+    setTimeout(async () => {
+      const session = await getUserSession();
+      if (session) {
+        api.defaults.headers.common['x-access-token'] = session.token;
+        api.defaults.headers.common.hi = session.hi;
+        reactotron.log(session);
         navigation.navigate('App');
       } else {
         navigation.navigate('Auth');

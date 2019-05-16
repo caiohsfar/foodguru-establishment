@@ -47,4 +47,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   { signIn }
-)(SignIn);
+)(SignIn)

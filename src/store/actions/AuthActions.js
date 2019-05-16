@@ -1,12 +1,13 @@
 import cepApi from 'cep-promise';
 import AsyncStorage from '@react-native-community/async-storage';
+import reactotron from 'reactotron-react-native';
 import getErrorMessage from '../../utils/getErrorMessage';
 
 import {
   CEP_SUCCESS,
   CEP_FAILURE,
   CEP_LOADING,
-  IS_LOADING,
+  IS_LOADING_AUTH,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
   CLEAR_ADDRESS,
@@ -15,9 +16,10 @@ import {
 } from './types';
 import api from '../../services/api';
 import NavigationService from '../../navigation/NavigationService';
+import { getUserSession } from '../../services/userServices';
 
 export const isLoading = () => ({
-  type: IS_LOADING
+  type: IS_LOADING_AUTH
 });
 
 export const signUp = user => (dispatch) => {
@@ -71,11 +73,17 @@ export const clearAddress = () => ({
 });
 
 const createSession = async ({ token, establishment, hi }) => {
+  reactotron.log('TOKEN:', { token, establishment, hi });
   try {
     await AsyncStorage.setItem('@FoodGuru:session', JSON.stringify({ token, establishment, hi }));
   } catch (error) {
-    console.log(error);
+    reactotron.log(error);
   }
+};
+const setApiDefaultHeader = async (session) => {
+  reactotron.log("session", session);
+  api.defaults.headers.common['x-access-token'] = session.token;
+  api.defaults.headers.common.hi = session.hi;
 };
 
 export const signIn = ({ email, password }) => (dispatch) => {
@@ -83,15 +91,16 @@ export const signIn = ({ email, password }) => (dispatch) => {
   api
     .post('/establishments/login', { email, password })
     .then((response) => {
+      reactotron.log(response);
       // Cria a sessão do usuario
-      console.log(response);
       createSession(response.data);
+      setApiDefaultHeader(response.data);
       dispatch(signInSuccess());
       // Chama o navigation static
       NavigationService.navigate('App');
     })
     .catch((error) => {
-      console.log(error.response);
+      reactotron.log(error.response);
       dispatch(signInFailure(error));
     });
 };
