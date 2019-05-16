@@ -15,10 +15,13 @@ export default props => (
       </TouchableOpacity>
     </View>
     <View style={styles.form}>
-      <TextField />
-      <TextField />
-      <TextField />
-      <TextField />
+      <TextField 
+        label='Nome'
+         />
+      <TextField 
+        label='Preço'/>
+      <TextField
+        label='Descricão' />
       <Picker />
     </View>
     <View style={styles.buttons}>
