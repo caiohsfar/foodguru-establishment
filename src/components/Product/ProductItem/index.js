@@ -8,32 +8,17 @@ import styles from './styles';
 import { toggle } from '../../../store/actions/ProductActions';
 
 class ProductItem extends React.PureComponent {
-
-  componentWillReceiveProps(props) {
-    this._showActionMode(props.selectedCount);
-  }
-
   _onPress = () => {
-    const { id, selecteds, selectedCount } = this.props;
+    const { id, selecteds } = this.props;
     this.props.toggle(id, !selecteds.get(id));
-    this._showActionMode(selectedCount);
-  };
-
-  _showActionMode = (count) => {
-    if ( count === 1) {
-      this.props.showActionMode(true);
-    } else if (count <= 0) {
-      this.props.showActionMode(false);
-    }
   };
 
   isSelected = () => this.props.selecteds.get(this.props.id);
 
-
   render() {
     const backgroundColor = this.isSelected() ? '#ffb3b3' : null;
     return (
-      <TouchableOpacity style={{...styles.container, backgroundColor }} onPress={this._onPress}>
+      <TouchableOpacity style={{ ...styles.container, backgroundColor }} onPress={this._onPress}>
         <View style={styles.imageContainer}>
           <Image style={styles.image} source={{ uri: this.props.image }} />
         </View>

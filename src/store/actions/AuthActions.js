@@ -29,6 +29,7 @@ export const signUp = user => (dispatch) => {
   api
     .post('/establishments', user)
     .then(() => {
+      reactotron.log("@login_succeed", errorMessage);
       dispatch(signUpSuccess());
       NavigationService.navigate('SignIn');
     })
@@ -42,6 +43,7 @@ export const signUpSuccess = () => ({
 
 export const signUpFailure = (error) => {
   const errorMessage = getErrorMessage(error);
+  reactotron.log("@login_error", errorMessage);
   return {
     type: SIGNUP_FAILURE,
     payload: errorMessage

@@ -4,14 +4,15 @@ import {
     StyleSheet,
     Text,
     View,
-    TouchableOpacity,
+    TouchableOpacity
 } from 'react-native';
 
 export default class Category extends Component{
     render(){
+        const { keyValue, value } = this.props;
         return (
-            <View key={this.props.keyValue} style={styles.category}>
-                <Text style={styles.categoryText}>{this.props.value.category}</Text>
+            <View key={keyValue} style={styles.category}>
+                <Text style={styles.categoryText}>{value}</Text>
 
                 <TouchableOpacity onPress={this.props.deleteMethod} style={styles.categoryDelete}>
                     <Icon style={[{ color: '#e10600' }]} size={25} name="delete" />

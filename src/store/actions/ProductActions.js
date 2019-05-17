@@ -18,11 +18,11 @@ import {
 import api from '../../services/api';
 import { getUserId } from '../../services/userServices';
 
-export const edit = product => async (dispatch) => {
+export const edit = ({ product, idSection }) => async (dispatch) => {
   dispatch(isLoading());
   try {
-    await api.put(`/products/${product.id}`, product);
-    dispatch(onEditSuccess(product));
+    await api.put(`/products/${product.id}`, {...product, sectionId: idSection});
+    dispatch(onEditSuccess({...product, sectionId: idSection }));
   } catch (error) {
     dispatch(onEditFailure(error));
   }
@@ -73,13 +73,11 @@ export const isLoading = () => ({
   type: IS_LOADING_FETCH_PRODUCTS
 });
 
-export const create = product => async (dispatch) => {
+export const create = ({ product, idSection }) => async (dispatch) => {
   console.log(product);
   dispatch(isLoading());
-  const idEstablishment = await getUserId();
-
   api
-    .post('/products', { product, id: idEstablishment })
+    .post('/products', { product, id: idSection })
     .then((response) => {
       dispatch(createSuccess(response.data));
       // NavigationService.navigate('SignIn');
@@ -112,13 +110,14 @@ export const createFailure = (error) => {
   };
 };
 
-export const fetch = () => async (dispatch) => {
+
+export const fetch = (sectionId) => async (dispatch) => {
   dispatch(isLoading());
-  const idEstb = await getUserId();
   api
-    .get(`/products/${idEstb}`)
+    .get(`/products/${sectionId}`)
     .then((response) => {
       dispatch(fetchSuccess(response.data));
+      reactotron.log('@OLHA A MERDA', response.data);
     })
     .catch(error => dispatch(fetchFailure(error)));
   // OUTRAS TRATATIVAS

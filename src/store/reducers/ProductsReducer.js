@@ -39,9 +39,10 @@ export default (state = INITIAL_STATE, action) => {
         fetchLoadState: false
       };
     case FETCH_PRODUCTS_SUCCESS:
+      reactotron.log('looog', action.payload);
       return {
         ...state,
-        productList: action.payload,
+        productList: [...state.productList, ...action.payload],
         fetchLoadState: false,
         fetchError: false
       };
@@ -68,11 +69,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         fetchLoadState: false,
-        productList: state.productList.map(
-          product => (product.id === action.payload.id
-            ? action.payload
-            : product)
-        )
+        productList: state.productList.map(product => (product.id === action.payload.id ? action.payload : product))
       };
     case EDIT_PRODUCT_FAILURE:
       return {

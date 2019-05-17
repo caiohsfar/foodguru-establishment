@@ -1,34 +1,41 @@
 import React, { Component } from 'react';
 import {
-  View, Text, TouchableOpacity, Image, Alert
+  View, Text, TouchableOpacity, Image, Alert, Picker
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
 import ImagePicker from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import reactotron from 'reactotron-react-native';
 import styles from './styles';
-import reactotron from 'reactotron-react-native'
-
+import { getUserId } from '../../../services/userServices';
+import api from '../../../services/api';
 
 const placeholder = require('../../../assets/img/image-placeholder.png');
 
 export default class ProductForm extends Component {
   state = {
-    id:null,
+    id: null,
     name: '',
     price: '',
     image: null,
     description: '',
     errorName: '',
     errorPrice: '',
-    errorDescription: ''
+    errorDescription: '',
+    selectedCategory: {id: 1, name: "oi"},
+    sectionId: null,
+    categories:[]
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { data } = this.props;
     reactotron.log(data);
     if (data) {
-      this.setState({...data, price: data.price.toString()})
+      reactotron.log(data, "A DATA QUE VEIO")
+      this.setState({ ...data, price: data.price.toString(),});
+      await this.getProductSection(data.sectionId);
     }
+    await this.getSections();
   }
 
   pickImage = () => {
@@ -61,8 +68,28 @@ export default class ProductForm extends Component {
     });
   }
 
+  getProductSection = async (sectionId) => {
+    try {
+      const response = await api.get(`/sections/section/${sectionId}`);
+      reactotron.log("SECTION SELECED")
+      this.setState({ selectedCategory: response.data });
+    } catch (e) {
+      alert(e);
+    }
+  }
+
+  getSections = async () => {
+    const idUser = await getUserId();
+    try {
+      const response = await api.get(`/sections/${idUser}`);
+      this.setState({ categories: response.data });
+    } catch (e) {
+      alert(e);
+    }
+  };
+
   validate = ({
-    name, price, image, description
+    name, price, image, description, selectedCategory
   }) => {
     let validation = true;
     if (!name) {
@@ -87,27 +114,38 @@ export default class ProductForm extends Component {
     } else {
       this.setState({ errorDescription: '' });
     }
+    // TODO: SELECT
+    if (!selectedCategory) {
+      validation = false;
+      Alert.alert("","Por favor, selecione uma categoria para o produto.");
+    }
+    reactotron.log(selectedCategory);
+
     return validation;
   }
 
   _onSubmit = () => {
     if (this.validate(this.state)) {
       const {
-        id, name, price, image, description
+        id, name, price, image, description, selectedCategory
       } = this.state;
       this.props.toggleModal(false);
-      this.props.onSubmit({
-        name, price, image, description, id
-      });
+      const data = { product: { id, name, price, description, image }, idSection: selectedCategory.id }
+      this.props.onSubmit(data);
     }
   }
 
   render() {
+    const { data } = this.props;
     return (
       <View style={{ flex: 1 }}>
         <KeyboardAwareScrollView>
           <View style={styles.containerPhoto}>
-            <Text style={styles.text}>{this.props.data ? 'Edite':'Cadastre'} um produto</Text>
+            <Text style={styles.text}>
+              {this.props.data ? 'Edite' : 'Cadastre'}
+              {' '}
+um produto
+            </Text>
             <TouchableOpacity onPress={this.pickImage}>
               <Image
                 style={styles.photo}
@@ -148,6 +186,16 @@ export default class ProductForm extends Component {
               value={this.state.description}
               error={this.state.errorDescription ? this.state.errorDescription : ''}
             />
+            <Picker
+              selectedValue={this.state.selectedCategory}
+              style={{ height: 50 }}
+              onValueChange={category => this.setState({ selectedCategory: category })
+              }
+            >
+              {
+                this.state.categories.map(category => <Picker.Item label={category.name} value={category} />)
+              }
+            </Picker>
           </View>
         </KeyboardAwareScrollView>
         <KeyboardAwareScrollView>

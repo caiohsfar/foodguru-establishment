@@ -15,6 +15,8 @@ import {
   create, fetch, toggle, remove, edit
 } from '../../store/actions/ProductActions';
 import ProductList from '../../components/Product/ProductList';
+import { getUserId } from '../../services/userServices';
+import api from '../../services/api';
 
 class Products extends Component {
   constructor(props) {
@@ -25,7 +27,8 @@ class Products extends Component {
       defaultSpring: new Animated.Value(1),
       // BUG DO REAT NATIVE
       actionSpring: new Animated.Value(0.01),
-      selectedProductData: null
+      selectedProductData: null,
+      categories: []
     };
   }
 
@@ -50,6 +53,16 @@ class Products extends Component {
       if (selected) {
         this.props.remove(id);
       }
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.selectedCount !== this.props.selectedCount) {
+        if (nextProps.selectedCount === 0) {
+          this.showActionMode(false);
+        } else if (nextProps.selectedCount === 1) {
+          this.showActionMode(true);
+        }
     }
   }
 
@@ -93,22 +106,36 @@ class Products extends Component {
   };
 
   setModalEditVisible = (visible) => {
-    const selectedProductData = this.getSelectedProductData()
-    this.setState({ selectedProductData })
+    const selectedProductData = this.getSelectedProductData();
+    // reactotron.log(selectedProductData);
+    this.setState({ selectedProductData });
     this.setState({ modalEditVisible: visible });
   };
 
-  componentDidMount = () => {
-    this.props.fetch();
+  componentDidMount = async () => {
+    await this.getSections();
+    this.state.categories.forEach(category => {
+      this.props.fetch(category.id);
+    });
   }
+  getSections = async () => {
+    const idUser = await getUserId();
+    try {
+      const response = await api.get(`/sections/${idUser}`);
+      this.setState({ categories: response.data });
+    } catch (e) {
+      alert(e);
+    }
+  };
 
   renderList = () => {
-    if (this.props.fetchLoadState) {
+    const { fetchLoadState, fetchError, productList } = this.props;
+    if (fetchLoadState) {
       return (
         <ActivityIndicator color={appTheme.COLOR} size="large" />
       );
     }
-    if (this.props.fetchError) {
+    if (fetchError) {
       return (
         <View style={styles.reloadContainer}>
           <Text style={styles.errorMessage}> Ops! Sem conexão. </Text>
@@ -120,6 +147,13 @@ class Products extends Component {
             buttonStyle={{ backgroundColor: appTheme.COLOR }}
           />
         </View>
+      );
+    }
+    if (productList.length === 0) {
+      return (
+        <Text style={{ marginTop: 100, fontSize: 17, alignSelf: 'center', color: appTheme.COLOR, fontWeight:'bold' }}>
+          Parece que você ainda não tem produtos.
+        </Text>
       );
     }
     return (
