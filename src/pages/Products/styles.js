@@ -29,5 +29,10 @@ export default StyleSheet.create({
   },
   reloadButtonStyle: {
     width: 200
-  }
+  },
+  actionButtonIcon: {
+    fontSize: 20,
+    height: 22,
+    color: 'white',
+  },
 });

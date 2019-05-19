@@ -18,11 +18,11 @@ import {
 import api from '../../services/api';
 import { getUserId } from '../../services/userServices';
 
-export const edit = ({ product, idSection }) => async (dispatch) => {
+export const edit = product => async (dispatch) => {
   dispatch(isLoading());
   try {
-    await api.put(`/products/${product.id}`, {...product, sectionId: idSection});
-    dispatch(onEditSuccess({...product, sectionId: idSection }));
+    await api.put(`/products/${product.id}`, product);
+    dispatch(onEditSuccess(product));
   } catch (error) {
     dispatch(onEditFailure(error));
   }
@@ -73,11 +73,11 @@ export const isLoading = () => ({
   type: IS_LOADING_FETCH_PRODUCTS
 });
 
-export const create = ({ product, idSection }) => async (dispatch) => {
+export const create = ({ product, sectionId }) => async (dispatch) => {
   console.log(product);
   dispatch(isLoading());
   api
-    .post('/products', { product, id: idSection })
+    .post('/products', { product, id: sectionId })
     .then((response) => {
       dispatch(createSuccess(response.data));
       // NavigationService.navigate('SignIn');
@@ -103,7 +103,7 @@ export const createSuccess = product => ({
 
 export const createFailure = (error) => {
   const errorMessage = getErrorMessage(error);
-  Alert.alert(errorMessage);
+  // Alert.alert(errorMessage);
   return {
     type: CREATE_PRODUCT_FAILURE,
     payload: errorMessage

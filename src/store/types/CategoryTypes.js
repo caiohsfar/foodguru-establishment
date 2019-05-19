@@ -1,0 +1,12 @@
+export const CREATE_CATEGORY_SUCCESS = 'create_category_success';
+export const CREATE_CATEGORY_FAILURE = 'create_category_failure';
+export const FETCH_CATEGORIES_SUCCESS = 'fetch_categories_success';
+export const FETCH_CATEGORIES_FAILURE = 'fetch_categories_failure';
+export const DELETE_CATEGORY_SUCCESS = 'delete_category_success';
+export const IS_LOADING_FETCH_CATEGORIES = 'is_loading_fetch_categories';
+export const TOGGLE_CATEGORY = 'toggle_category';
+export const REMOVE_CATEGORY_SUCCESS = 'remove_category_success';
+export const REMOVE_CATEGORY_FAILURE = 'remove_category_failure';
+export const EDIT_CATEGORY_SUCCESS = 'edit_category_success';
+export const EDIT_CATEGORY_FAILURE = 'edit_category_failure';
+export const IS_LOADING_CREATE_CATEGORY = 'is_loading_create_categories';

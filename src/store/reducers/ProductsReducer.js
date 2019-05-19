@@ -30,7 +30,9 @@ export default (state = INITIAL_STATE, action) => {
     case CREATE_PRODUCT_SUCCESS:
       return {
         ...state,
-        productList: [...state.productList, action.payload],
+        productList: state.productList.some(product => product.sectionId === action.payload.sectionId)
+          ? [...state.productList, action.payload]
+          : state.productList,
         fetchLoadState: false
       };
     case CREATE_PRODUCT_FAILURE:
@@ -42,7 +44,7 @@ export default (state = INITIAL_STATE, action) => {
       reactotron.log('looog', action.payload);
       return {
         ...state,
-        productList: [...state.productList, ...action.payload],
+        productList: action.payload,
         fetchLoadState: false,
         fetchError: false
       };
@@ -69,7 +71,9 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         fetchLoadState: false,
-        productList: state.productList.map(product => (product.id === action.payload.id ? action.payload : product))
+        productList: state.productList[0].sectionId !== action.payload.sectionId
+          ? removeProductOnEdit(state, action)
+          : editProduct(state, action)
       };
     case EDIT_PRODUCT_FAILURE:
       return {
@@ -80,3 +84,7 @@ export default (state = INITIAL_STATE, action) => {
       return state;
   }
 };
+
+const removeProductOnEdit = (state, action) => state.productList.filter(product => product.id !== action.payload.id)
+const editProduct = (state, action) => state.productList.map(product => (product.id === action.payload.id
+  ? action.payload : product));

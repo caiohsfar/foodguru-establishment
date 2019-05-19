@@ -22,20 +22,18 @@ export default class ProductForm extends Component {
     errorName: '',
     errorPrice: '',
     errorDescription: '',
-    selectedCategory: {id: 1, name: "oi"},
+    selectedCategory: {},
     sectionId: null,
-    categories:[]
+    categories: []
   };
 
   async componentDidMount() {
     const { data } = this.props;
     reactotron.log(data);
     if (data) {
-      reactotron.log(data, "A DATA QUE VEIO")
-      this.setState({ ...data, price: data.price.toString(),});
-      await this.getProductSection(data.sectionId);
+      this.setState({ ...data, price: data.price.toString(), });
     }
-    await this.getSections();
+    this.setState({ selectedCategory: { id: 'default' } });
   }
 
   pickImage = () => {
@@ -68,25 +66,17 @@ export default class ProductForm extends Component {
     });
   }
 
-  getProductSection = async (sectionId) => {
-    try {
-      const response = await api.get(`/sections/section/${sectionId}`);
-      reactotron.log("SECTION SELECED")
-      this.setState({ selectedCategory: response.data });
-    } catch (e) {
-      alert(e);
-    }
-  }
+  getSelectedProductCategory = (categories, product) => categories.filter(category => (category.id === product.sectionId))
 
-  getSections = async () => {
-    const idUser = await getUserId();
-    try {
-      const response = await api.get(`/sections/${idUser}`);
-      this.setState({ categories: response.data });
-    } catch (e) {
-      alert(e);
-    }
-  };
+  // getProductSection = async (sectionId) => {
+  //   try {
+  //     const response = await api.get(`/sections/section/${sectionId}`);
+  //     reactotron.log("SECTION SELECED")
+  //     this.setState({ selectedCategory: response.data });
+  //   } catch (e) {
+  //     alert(e);
+  //   }
+  // }
 
   validate = ({
     name, price, image, description, selectedCategory
@@ -115,9 +105,9 @@ export default class ProductForm extends Component {
       this.setState({ errorDescription: '' });
     }
     // TODO: SELECT
-    if (!selectedCategory) {
+    if (selectedCategory.id === 'default') {
       validation = false;
-      Alert.alert("","Por favor, selecione uma categoria para o produto.");
+      Alert.alert('', 'Por favor, selecione uma categoria para o produto.');
     }
     reactotron.log(selectedCategory);
 
@@ -130,13 +120,27 @@ export default class ProductForm extends Component {
         id, name, price, image, description, selectedCategory
       } = this.state;
       this.props.toggleModal(false);
-      const data = { product: { id, name, price, description, image }, idSection: selectedCategory.id }
-      this.props.onSubmit(data);
+      let formData;
+
+      if (this.props.data) {
+        formData = {
+          id, name, price, description, image, sectionId: selectedCategory.id
+        };
+      } else {
+        formData = {
+          product: {
+            id, name, price, description, image
+          },
+          sectionId: selectedCategory.id
+        };
+      }
+
+      this.props.onSubmit(formData);
     }
   }
 
+
   render() {
-    const { data } = this.props;
     return (
       <View style={{ flex: 1 }}>
         <KeyboardAwareScrollView>
@@ -187,14 +191,19 @@ um produto
               error={this.state.errorDescription ? this.state.errorDescription : ''}
             />
             <Picker
+              ref={ref => this.picker = ref}
               selectedValue={this.state.selectedCategory}
               style={{ height: 50 }}
               onValueChange={category => this.setState({ selectedCategory: category })
               }
+
             >
-              {
-                this.state.categories.map(category => <Picker.Item label={category.name} value={category} />)
+              <Picker.Item label="Please select an option..." value={{ id: 'default' }} />
+              {this.props.categories.map(category => (
+                <Picker.Item label={category.name} value={category} />
+              ))
               }
+
             </Picker>
           </View>
         </KeyboardAwareScrollView>

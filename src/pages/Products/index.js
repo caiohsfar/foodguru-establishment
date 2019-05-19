@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import {
-  View, Text, ActivityIndicator, Animated, Dimensions, Easing
+  View, Text, ActivityIndicator, Animated, Dimensions, Easing, Picker, TextInput
 } from 'react-native';
 import Modal from 'react-native-modal';
+import ModalSelector from 'react-native-modal-selector';
 import { Icon, Button } from 'react-native-elements';
 import { connect } from 'react-redux';
 import reactotron from 'reactotron-react-native';
@@ -12,11 +13,14 @@ import { appTheme } from '../../constants/styles';
 import ActionHeader from '../../components/Product/ProductsHeaders/ActionHeader';
 import DefaultHeader from '../../components/Product/ProductsHeaders/DefaultHeader';
 import {
-  create, fetch, toggle, remove, edit
+  create, fetch as fetchProducts , toggle, remove, edit
 } from '../../store/actions/ProductActions';
+import { fetch as fetchCategories } from '../../store/actions/CategoryActions'
 import ProductList from '../../components/Product/ProductList';
 import { getUserId } from '../../services/userServices';
 import api from '../../services/api';
+import ActionButton from 'react-native-action-button';
+
 
 class Products extends Component {
   constructor(props) {
@@ -28,7 +32,7 @@ class Products extends Component {
       // BUG DO REAT NATIVE
       actionSpring: new Animated.Value(0.01),
       selectedProductData: null,
-      categories: []
+      selectedCategory: {},
     };
   }
 
@@ -58,12 +62,21 @@ class Products extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.selectedCount !== this.props.selectedCount) {
-        if (nextProps.selectedCount === 0) {
-          this.showActionMode(false);
-        } else if (nextProps.selectedCount === 1) {
-          this.showActionMode(true);
-        }
+      if (nextProps.selectedCount === 0) {
+        this.showActionMode(false);
+      } else if (nextProps.selectedCount === 1) {
+        this.showActionMode(true);
+      }
     }
+    // if (nextProps.productList !== this.props.productList) {
+    //   this.props.fetchProducts(this.state.selectedCategory.id)
+    // }
+    // if (nextProps.categoryList !== this.props.categoryList) {
+    //   reactotron.log("@products receive proops mudou category", nextProps)
+    //   nextProps.categoryList.forEach(category => {
+    //     nextProps.fetchProducts(category.id);
+    //   });
+    // }
   }
 
   onPressEdit = () => {
@@ -113,11 +126,9 @@ class Products extends Component {
   };
 
   componentDidMount = async () => {
-    await this.getSections();
-    this.state.categories.forEach(category => {
-      this.props.fetch(category.id);
-    });
+    this.props.fetchCategories();
   }
+
   getSections = async () => {
     const idUser = await getUserId();
     try {
@@ -129,7 +140,9 @@ class Products extends Component {
   };
 
   renderList = () => {
-    const { fetchLoadState, fetchError, productList } = this.props;
+    const {
+ fetchLoadState, fetchError, productList, categoryList 
+} = this.props;
     if (fetchLoadState) {
       return (
         <ActivityIndicator color={appTheme.COLOR} size="large" />
@@ -140,7 +153,7 @@ class Products extends Component {
         <View style={styles.reloadContainer}>
           <Text style={styles.errorMessage}> Ops! Sem conexão. </Text>
           <Button
-            onPress={() => this.props.fetch()}
+            onPress={() => this.props.fetchProducts()}
             title="Recarregar"
             type="solid"
             containerStyle={styles.reloadButtonStyle}
@@ -149,9 +162,11 @@ class Products extends Component {
         </View>
       );
     }
-    if (productList.length === 0) {
+    if (productList.length === 0 && this.state.selectedCategory.name) {
       return (
-        <Text style={{ marginTop: 100, fontSize: 17, alignSelf: 'center', color: appTheme.COLOR, fontWeight:'bold' }}>
+        <Text style={{
+ marginTop: 100, fontSize: 17, alignSelf: 'center', color: appTheme.COLOR, fontWeight: 'bold' 
+}}>
           Parece que você ainda não tem produtos.
         </Text>
       );
@@ -203,20 +218,56 @@ class Products extends Component {
     }
   }
 
+  onValuePickerChange = (selectedCategory) => {
+    this.setState({ selectedCategory });
+    this.props.fetchProducts(selectedCategory.id);
+  }
 
   render() {
+    const selectedCategory = this.state.selectedCategory || this.props.categoryList[0];
     const { modalCreateVisible, modalEditVisible } = this.state;
     return (
       <View style={styles.container}>
         {this.renderHeader()}
         <Modal style={styles.modal} isVisible={modalCreateVisible} useNativeDriver>
-          <ProductForm toggleModal={this.setModalCreateVisible} onSubmit={this.props.create} />
+          <ProductForm
+            categories={this.props.categoryList}
+            toggleModal={this.setModalCreateVisible}
+            onSubmit={this.props.create}
+          />
         </Modal>
         <Modal style={styles.modal} isVisible={modalEditVisible} useNativeDriver>
-          <ProductForm data={this.state.selectedProductData} toggleModal={this.setModalEditVisible} onSubmit={this.props.edit} />
+          <ProductForm
+            data={this.state.selectedProductData}
+            categories={this.props.categoryList}
+            toggleModal={this.setModalEditVisible}
+            onSubmit={this.props.edit}
+          />
         </Modal>
+        <ModalSelector
+          data={this.props.categoryList}
+          cancelText="Cancelar"
+          optionTextStyle={{ color:appTheme.COLOR, fontWeight:"bold", fontSize:17 }}
+          supportedOrientations={['landscape']}
+          accessible
+          scrollViewAccessibilityLabel={'Scrollable options'}
+          cancelButtonAccessibilityLabel={'Cancel Button'}
+          onChange={(option) =>this.onValuePickerChange(option)}
+          keyExtractor={item => item.id}
+          labelExtractor={item => item.name}>
+          <View
+              style={{ borderWidth:1, borderColor:'#ccc', alignItems:'center', elevation:1, height:50, margin: 10, justifyContent:'center'}}
+              placeholder="Selecione uma categoria"
+              placeholderTextColor={appTheme.COLOR}
+            >
+            <Text style={{fontWeight:'bold', color:appTheme.COLOR, fontSize: 18}}>
+              {this.state.selectedCategory.name ? this.state.selectedCategory.name : "Selecione uma categoria"}
+            </Text>    
+          </View>
+
+        </ModalSelector>
         {this.renderList()}
-        <Icon
+        {/* <Icon
           containerStyle={styles.fab}
           name="add"
           raised
@@ -225,23 +276,32 @@ class Products extends Component {
           onPress={() => {
             this.setModalCreateVisible(true);
           }}
-        />
+        /> */}
+        <ActionButton buttonColor={appTheme.COLOR}>
+          <ActionButton.Item buttonColor='#9b59b6' title="Nova categoria" onPress={() => this.props.navigation.navigate('Categories')}>
+            <Icon type='material' name="list" color='#ddd' />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3498db' title="Novo produto" onPress={() => this.setModalCreateVisible(true)}>
+            <Icon type='material' name="restaurant-menu" color='#ddd' />
+          </ActionButton.Item>
+        </ActionButton>
       </View>
     );
   }
 }
 
-const mapStateToProps = state => ({
-  fetchError: state.ProductsReducer.fetchError,
-  fetchLoadState: state.ProductsReducer.fetchLoadState,
-  productList: state.ProductsReducer.productList,
-  selecteds: state.ProductsReducer.selecteds,
-  selectedCount: state.ProductsReducer.selectedCount,
+const mapStateToProps = ({ ProductsReducer, CategoryReducer }) => ({
+  fetchError: ProductsReducer.fetchError,
+  fetchLoadState: ProductsReducer.fetchLoadState,
+  productList: ProductsReducer.productList,
+  selecteds: ProductsReducer.selecteds,
+  selectedCount: ProductsReducer.selectedCount,
+  categoryList: CategoryReducer.categoryList
 });
 
 export default connect(
   mapStateToProps,
   {
-    create, fetch, toggle, remove, edit
+    create, fetchProducts, toggle, remove, edit, fetchCategories
   }
 )(Products);

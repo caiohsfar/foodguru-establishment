@@ -2,12 +2,45 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 import { View } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { createStackNavigator } from 'react-navigation';
 import Orders from '../pages/Orders';
 import Products from '../pages/Products';
 import More from '../pages/More';
 import Tables from '../pages/Tables';
+import Categories from '../pages/More/Categories';
 
 import { appTheme } from '../constants/styles';
+
+const categoryOptions = {
+  headerTintColor: '#ddd',
+  title: 'Categorias',
+  headerStyle: {
+    backgroundColor: '#800000',
+    borderBottomWidth: 5,
+    borderBottomColor: '#ddd'
+  }
+};
+
+const MoreStack = createStackNavigator({
+  More,
+  Categories: {
+    screen: Categories,
+    navigationOptions: categoryOptions
+  }
+});
+
+const ProductStack = createStackNavigator({
+  Products: {
+    screen: Products,
+    navigationOptions: {
+      header: null
+    }
+  },
+  Categories: {
+    screen: Categories,
+    navigationOptions: categoryOptions
+  }
+});
 
 export default createMaterialBottomTabNavigator(
   // Route configs
@@ -24,7 +57,7 @@ export default createMaterialBottomTabNavigator(
       }
     },
     Products: {
-      screen: Products,
+      screen: ProductStack,
       navigationOptions: {
         tabBarLabel: 'Produtos',
         tabBarIcon: ({ tintColor }) => (
@@ -46,7 +79,7 @@ export default createMaterialBottomTabNavigator(
       }
     },
     More: {
-      screen: More,
+      screen: MoreStack,
       navigationOptions: {
         tabBarLabel: 'Mais',
         tabBarIcon: ({ tintColor }) => (
