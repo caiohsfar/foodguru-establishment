@@ -16,34 +16,33 @@ import {
 } from './types';
 import api from '../../services/api';
 import NavigationService from '../../navigation/NavigationService';
-import { getUserSession } from '../../services/userServices';
+import { getUserSession, getGeocodeInfo } from '../../services/userServices';
 
 export const isLoading = () => ({
   type: IS_LOADING_AUTH
 });
 
-export const signUp = user => (dispatch) => {
-  console.log(user);
+export const signUp = user => async (dispatch) => {
   dispatch(isLoading());
-
+  const { lat, lng } = await getGeocodeInfo(Object.values(user.address).join());
+  const body = {...user, latitude: lat, longitude: lng };
+  reactotron.log(body);
   api
-    .post('/establishments', user)
+    .post('/establishments', body)
     .then(() => {
-      reactotron.log("@login_succeed", errorMessage);
       dispatch(signUpSuccess());
       NavigationService.navigate('SignIn');
     })
     .catch(error => dispatch(signUpFailure(error)));
   // OUTRAS TRATATIVAS
 };
-// NAVEGAR ATÉ OUTRA TELA
+// NAVEGAR ATÉ OUTRA TELA (de boas vindas com slides)
 export const signUpSuccess = () => ({
   type: SIGNUP_SUCCESS
 });
 
 export const signUpFailure = (error) => {
   const errorMessage = getErrorMessage(error);
-  reactotron.log("@login_error", errorMessage);
   return {
     type: SIGNUP_FAILURE,
     payload: errorMessage
@@ -83,7 +82,6 @@ const createSession = async ({ token, establishment, hi }) => {
   }
 };
 const setApiDefaultHeader = async (session) => {
-  reactotron.log("session", session);
   api.defaults.headers.common['x-access-token'] = session.token;
   api.defaults.headers.common.hi = session.hi;
 };

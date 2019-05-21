@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  View, Text, ActivityIndicator, Animated, Dimensions, Easing, Picker, TextInput
+  View, Text, ActivityIndicator, Animated, Dimensions, Easing, Alert
 } from 'react-native';
 import Modal from 'react-native-modal';
 import ModalSelector from 'react-native-modal-selector';
@@ -117,6 +117,15 @@ class Products extends Component {
   setModalCreateVisible = (visible) => {
     this.setState({ modalCreateVisible: visible });
   };
+
+  handleAddProduct = () => {
+    if (this.props.categoryList.length === 0) {
+      Alert.alert("Erro.", "Você precisa ter pelo menos uma categoria, para poder adicionar um produto.")
+    }
+    else {
+      this.setModalCreateVisible(true);
+    }
+  }
 
   setModalEditVisible = (visible) => {
     const selectedProductData = this.getSelectedProductData();
@@ -256,7 +265,7 @@ class Products extends Component {
           keyExtractor={item => item.id}
           labelExtractor={item => item.name}>
           <View
-              style={{ borderWidth:1, borderColor:'#ccc', alignItems:'center', elevation:1, height:50, margin: 10, justifyContent:'center'}}
+              style={{ borderWidth:1, borderColor:'#ccc', alignItems:'center', elevation:1, height:50, margin: 10, justifyContent:'center', borderRadius: 4}}
               placeholder="Selecione uma categoria"
               placeholderTextColor={appTheme.COLOR}
             >
@@ -281,7 +290,7 @@ class Products extends Component {
           <ActionButton.Item buttonColor='#9b59b6' title="Nova categoria" onPress={() => this.props.navigation.navigate('Categories')}>
             <Icon type='material' name="list" color='#ddd' />
           </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3498db' title="Novo produto" onPress={() => this.setModalCreateVisible(true)}>
+          <ActionButton.Item buttonColor='#3498db' title="Novo produto" onPress={() => this.handleAddProduct()}>
             <Icon type='material' name="restaurant-menu" color='#ddd' />
           </ActionButton.Item>
         </ActionButton>
