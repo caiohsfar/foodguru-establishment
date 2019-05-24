@@ -7,19 +7,20 @@ import ModalSelector from 'react-native-modal-selector';
 import { Icon, Button } from 'react-native-elements';
 import { connect } from 'react-redux';
 import reactotron from 'reactotron-react-native';
+import ActionButton from 'react-native-action-button';
 import ProductForm from '../../components/Product/ProductForm';
 import styles from './styles';
 import { appTheme } from '../../constants/styles';
 import ActionHeader from '../../components/Product/ProductsHeaders/ActionHeader';
 import DefaultHeader from '../../components/Product/ProductsHeaders/DefaultHeader';
 import {
-  create, fetch as fetchProducts , toggle, remove, edit
+  create, fetch as fetchProducts, toggle, remove, edit
 } from '../../store/actions/ProductActions';
-import { fetch as fetchCategories } from '../../store/actions/CategoryActions'
+import { fetch as fetchCategories } from '../../store/actions/CategoryActions';
 import ProductList from '../../components/Product/ProductList';
 import { getUserId } from '../../services/userServices';
 import api from '../../services/api';
-import ActionButton from 'react-native-action-button';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 class Products extends Component {
@@ -120,9 +121,8 @@ class Products extends Component {
 
   handleAddProduct = () => {
     if (this.props.categoryList.length === 0) {
-      Alert.alert("Erro.", "Você precisa ter pelo menos uma categoria, para poder adicionar um produto.")
-    }
-    else {
+      Alert.alert('Erro.', 'Você precisa ter pelo menos uma categoria, para poder adicionar um produto.');
+    } else {
       this.setModalCreateVisible(true);
     }
   }
@@ -138,20 +138,10 @@ class Products extends Component {
     this.props.fetchCategories();
   }
 
-  getSections = async () => {
-    const idUser = await getUserId();
-    try {
-      const response = await api.get(`/sections/${idUser}`);
-      this.setState({ categories: response.data });
-    } catch (e) {
-      alert(e);
-    }
-  };
-
   renderList = () => {
     const {
- fetchLoadState, fetchError, productList, categoryList 
-} = this.props;
+      fetchLoadState, fetchError, productList, categoryList
+    } = this.props;
     if (fetchLoadState) {
       return (
         <ActivityIndicator color={appTheme.COLOR} size="large" />
@@ -174,9 +164,10 @@ class Products extends Component {
     if (productList.length === 0 && this.state.selectedCategory.name) {
       return (
         <Text style={{
- marginTop: 100, fontSize: 17, alignSelf: 'center', color: appTheme.COLOR, fontWeight: 'bold' 
-}}>
-          Parece que você ainda não tem produtos.
+          marginTop: 100, fontSize: 17, alignSelf: 'center', color: appTheme.COLOR, fontWeight: 'bold'
+        }}
+        >
+          Parece que você ainda não tem produtos para esta categoria.
         </Text>
       );
     }
@@ -233,7 +224,6 @@ class Products extends Component {
   }
 
   render() {
-    const selectedCategory = this.state.selectedCategory || this.props.categoryList[0];
     const { modalCreateVisible, modalEditVisible } = this.state;
     return (
       <View style={styles.container}>
@@ -253,45 +243,50 @@ class Products extends Component {
             onSubmit={this.props.edit}
           />
         </Modal>
-        <ModalSelector
+        {this.props.categoryList.length > 0 ?
+          <ModalSelector
           data={this.props.categoryList}
           cancelText="Cancelar"
-          optionTextStyle={{ color:appTheme.COLOR, fontWeight:"bold", fontSize:17 }}
+          optionTextStyle={{ color: appTheme.COLOR, fontWeight: 'bold', fontSize: 17 }}
           supportedOrientations={['landscape']}
           accessible
-          scrollViewAccessibilityLabel={'Scrollable options'}
-          cancelButtonAccessibilityLabel={'Cancel Button'}
-          onChange={(option) =>this.onValuePickerChange(option)}
+          scrollViewAccessibilityLabel="Scrollable options"
+          cancelButtonAccessibilityLabel="Cancel Button"
+          onChange={option => this.onValuePickerChange(option)}
           keyExtractor={item => item.id}
-          labelExtractor={item => item.name}>
+          labelExtractor={item => item.name}
+        >
           <View
-              style={{ borderWidth:1, borderColor:'#ccc', alignItems:'center', elevation:1, height:50, margin: 10, justifyContent:'center', borderRadius: 4}}
-              placeholder="Selecione uma categoria"
-              placeholderTextColor={appTheme.COLOR}
-            >
-            <Text style={{fontWeight:'bold', color:appTheme.COLOR, fontSize: 18}}>
-              {this.state.selectedCategory.name ? this.state.selectedCategory.name : "Selecione uma categoria"}
-            </Text>    
+            style={{
+              borderWidth: 1, borderColor: '#ccc', alignItems: 'center', elevation: 1, height: 50, margin: 10, justifyContent: 'center', borderRadius: 4
+            }}
+            placeholder="Selecione uma categoria"
+            placeholderTextColor={appTheme.COLOR}
+          >
+            <Text style={{ fontWeight: 'bold', color: appTheme.COLOR, fontSize: 18 }}>
+              {this.state.selectedCategory.name ? this.state.selectedCategory.name : 'Selecione uma categoria'}
+            </Text>
           </View>
 
         </ModalSelector>
+        :
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate('Categories')}
+            style={{
+            borderWidth: 1, borderColor: '#ccc', alignItems: 'center', elevation: 1, height: 50, margin: 10, justifyContent: 'center', borderRadius: 4
+          }}>
+              <Text style={{ fontWeight: 'bold', color: appTheme.COLOR, fontSize: 18 }}>
+                Adicione uma categoria para começar!
+              </Text>
+          </TouchableOpacity>
+      }
         {this.renderList()}
-        {/* <Icon
-          containerStyle={styles.fab}
-          name="add"
-          raised
-          reverse
-          color={appTheme.COLOR}
-          onPress={() => {
-            this.setModalCreateVisible(true);
-          }}
-        /> */}
         <ActionButton buttonColor={appTheme.COLOR}>
-          <ActionButton.Item buttonColor='#9b59b6' title="Nova categoria" onPress={() => this.props.navigation.navigate('Categories')}>
-            <Icon type='material' name="list" color='#ddd' />
+          <ActionButton.Item buttonColor="#9b59b6" title="Nova categoria" onPress={() => this.props.navigation.navigate('Categories')}>
+            <Icon type="material" name="list" color="#ddd" />
           </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3498db' title="Novo produto" onPress={() => this.handleAddProduct()}>
-            <Icon type='material' name="restaurant-menu" color='#ddd' />
+          <ActionButton.Item buttonColor="#3498db" title="Novo produto" onPress={() => this.handleAddProduct()}>
+            <Icon type="material" name="restaurant-menu" color="#ddd" />
           </ActionButton.Item>
         </ActionButton>
       </View>

@@ -14,7 +14,6 @@ class ProductList extends React.PureComponent {
       price={item.price}
       description={item.description}
       image={item.image}
-      showActionMode={this.props.showActionMode}
     />
   );
 

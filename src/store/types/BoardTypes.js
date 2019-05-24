@@ -1,0 +1,10 @@
+export const CREATE_BOARD_SUCCESS = 'create_board_success';
+export const CREATE_BOARD_FAILURE = 'create_board_failure';
+export const FETCH_BOARDS_SUCCESS = 'fetch_boards_success';
+export const FETCH_BOARDS_FAILURE = 'fetch_boards_failure';
+export const DELETE_BOARD_SUCCESS = 'delete_board_success';
+export const IS_LOADING_FETCH_BOARDS = 'is_loading_fetch_boards';
+export const TOGGLE_BOARD = 'toggle_board';
+export const REMOVE_BOARD_SUCCESS = 'remove_board_success';
+export const REMOVE_BOARD_FAILURE = 'remove_board_failure';
+export const IS_LOADING_CREATE_BOARD = 'is_loading_create_board';

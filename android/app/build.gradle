@@ -96,7 +96,7 @@ def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-
+    
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -108,6 +108,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
+
     }
     splits {
         abi {
@@ -139,6 +141,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-linear-gradient')
     implementation project(':react-native-config')
     implementation project(':@react-native-community_async-storage')
     implementation project(':react-native-vector-icons')

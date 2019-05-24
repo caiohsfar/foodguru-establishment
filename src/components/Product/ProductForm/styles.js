@@ -2,13 +2,18 @@ import { StyleSheet, PixelRatio } from 'react-native';
 import { appTheme } from '../../../constants/styles';
 
 export default StyleSheet.create({
-  containerPhoto: { flex: 2, alignItems: 'center', justifyContent: 'flex-start' },
+  containerPhoto: {
+    flex: 2,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    borderRadius: 4
+  },
   photo: {
     resizeMode: 'contain',
     marginTop: 30,
     width: 100,
     height: 100,
-    borderRadius: 10,
+    borderRadius: 4,
     borderColor: appTheme.COLOR,
     borderWidth: 1 / PixelRatio.get()
   },

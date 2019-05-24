@@ -6,7 +6,7 @@ import { createStackNavigator } from 'react-navigation';
 import Orders from '../pages/Orders';
 import Products from '../pages/Products';
 import More from '../pages/More';
-import Tables from '../pages/Tables';
+import Boards from '../pages/Boards';
 import Categories from '../pages/More/Categories';
 
 import { appTheme } from '../constants/styles';
@@ -67,8 +67,8 @@ export default createMaterialBottomTabNavigator(
         )
       }
     },
-    Tables: {
-      screen: Tables,
+    Boards: {
+      screen: Boards,
       navigationOptions: {
         tabBarLabel: 'Mesas',
         tabBarIcon: ({ tintColor }) => (
