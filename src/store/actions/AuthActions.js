@@ -24,9 +24,14 @@ export const isLoading = () => ({
 
 export const signUp = user => async (dispatch) => {
   dispatch(isLoading());
-  const { lat, lng } = await getGeocodeInfo(Object.values(user.address).join());
-  const body = {...user, latitude: lat, longitude: lng };
-  reactotron.log(body);
+  const {
+    cep, street, state, neighborhood, city, number
+  } = user;
+  const { lat, lng } = await getGeocodeInfo(
+    `${street}, ${number} - ${neighborhood}, ${city} - ${state}`
+  );
+  const body = { ...user, latitude: lat, longitude: lng };
+  reactotron.log('body', body);
   api
     .post('/establishments', body)
     .then(() => {
