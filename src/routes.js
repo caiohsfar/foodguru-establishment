@@ -8,13 +8,21 @@ import AuthStack from './navigation/AuthStack';
 const Routes = createAppContainer(
   createSwitchNavigator(
     {
+      AppStack,
+      App: AppStack,
+      Auth: AppStack
+    },
+    {
+      initialRouteName: 'AppStack'
+    }
+    /*{
       Splash,
       App: AppStack,
       Auth: AuthStack
     },
     {
       initialRouteName: 'Splash'
-    }
+    }*/
   )
 );
 
