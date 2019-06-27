@@ -6,139 +6,104 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  View
+  View,
+  FlatList
 } from 'react-native';
-import { Card, CardItem, Left, Right, Button, Container, Tab, Tabs,Text } from 'native-base';
+import reactotron from 'reactotron-react-native';
+import {
+ Card, CardItem, Left, Right, Button, Container, Tab, Tabs 
+} from 'native-base';
+import { connect } from 'react-redux';
+import Header from '../../components/Orders/Header';
+import OrderItem from '../../components/Orders/OrderItem';
+import { fetchOrders, addToProgress, finalize, addToMade } from '../../store/actions/OrderActions';
+import orders from '../../constants/orders';
+import Toast, {DURATION} from 'react-native-easy-toast'
+import SocketIOClient from 'socket.io-client';
+import Config from 'react-native-config';
+import { getUserId } from '../../services/userServices';
 
-export default class App extends Component {
-  state={
-    categories:[
-      { id: 1,
-        numberOrder: '001',
-        mesa: 1,
-        order: ['2X Pizza de Mussarela\n'],
-        situation: ['Realizado'],
-      },
-      { id: 2,
-        numberOrder: '002',
-        mesa: 2,
-        order: ['1X Feijoada\n'],
-        situation: ['Realizado'],
-      },
-      { id: 3,
-        numberOrder: '003',
-        mesa: 3,
-        order: ['1X Macarronada\n'],
-        situation: ['Realizado'],
-      },
-      { id: 4,
-        numberOrder: '004',
-        mesa: 4,
-        order: ['1X X-Tudo\n', '1X Água com gás\n'],
-        situation: ['Andamento'],
-      },
-      { id: 5,
-        numberOrder: '005',
-        mesa: 5,
-        order: ['2X Frango Parmegiana\n'],
-        situation: ['Andamento'],
+class Orders extends Component {
+  constructor(props) {
+    super(props);
+    this._io = SocketIOClient(Config.API_URL);
+    this.addSocketListener();
+  }
+
+  addSocketListener = async () => {
+    const io = this._io;
+    const userId = await getUserId();
+    io.on('orders', (item) => {
+      reactotron.log("Socker", item, userId)
+      if (userId === item[0].establishmentId) {
+        this.props.addToMade(item[0]);
       }
-      ,
-      { id: 6,
-        numberOrder: '006',
-        mesa: 6,
-        order: ['1X Pizza Portuguesa\n', '1X Coca Cola 1L\n'],
-        situation: ['Andamento'],
-      },
-      { id: 7,
-        numberOrder: '007',
-        mesa: 7,
-        order: ['2X Almoço Executivo\n'],
-        situation: ['Andamento'],
-      },
-      { id: 8,
-        numberOrder: '008',
-        mesa: 8,
-        order: ['2X Yakisoba\n'],
-        situation: ['Andamento'],
-      },
-      { id: 9,
-        numberOrder: '009',
-        mesa: 9,
-        order: ['1X Filé Parmegiana\n','1X Coca Cola 1L\n'],
-        situation: ['Finalizado'],
-      },
-      { id: 10,
-        numberOrder: '010',
-        mesa: 10,
-        order: ['1X Pizza de Calabresa\n', '1X Coca Cola 2L\n'],
-        situation: ['Finalizado'],
-      }
-    ]
-  };
+    })
+  }
+
+  handleItemPress = (item, type) => {
+    if (type === orders.MADE) {
+      this.props.addToProgress(item);
+    } else {
+      this.props.finalize(item.id)
+    }
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    if (this.props.madeList.length > nextProps.madeList.length) {
+      this.refs.toast.show('O ítem passou para a lista de produtos em progresso!', 1000);
+    }
+    if (this.props.inProgressList.length > nextProps.inProgressList.length) {
+      this.refs.toast.show('O ítem foi marcado como finalizado!', 1000);
+    }
+    if (this.props.madeList.length < nextProps.madeList.length) {
+      this.refs.toast.show('Novo pedido!', 1000)
+    }
+  }
+
+  _keyExtractor = (item, index) => item.id;
+
+  _renderItem = ({ item: { id, quantity, name } }, type) => (
+    <OrderItem
+      id={id}
+      name={name}
+      quantity={quantity}
+      type={type}
+      handlePress={this.handleItemPress}
+    />
+  );
+
+  renderList = (data, type) => (
+    <FlatList
+      data={data}
+      keyExtractor={this._keyExtractor}
+      renderItem={({ item }) => this._renderItem({ item }, type)}
+    />
+  );
+
+  componentDidMount = async () => {
+    this.props.fetchOrders();
+  }
 
   render() {
-    const {categories} = this.state;
+    const { inProgressList, madeList } = this.props;
     return (
-      <Container>
+      <Container style={{backgroundColor: '#ddd'}}>
+        <Header />
         <Tabs initialPage={0}>
-          <Tab tabStyle={{backgroundColor: '#FF0000'}} activeTabStyle={{backgroundColor: '#fff'}} textStyle={{color: '#fff'}} activeTextStyle={{color: '#FF0000',}} heading="Realizados">
-            <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={{ paddingVertical: 10,marginBottom: 50}}
-            >
-              <View flex={0} row space="between" style={styles.categories}>
-                {categories.map(category => (
-                <TouchableOpacity key={category.id}>
-                  <Card>  
-                    <Text style={styles.textCardLeft}>Nº{category.numberOrder} - Mesa: {category.mesa}</Text>
-                    <Text style={styles.textStuff}>{category.order}</Text>
-                  </Card>
-                </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
+          <Tab tabStyle={{ backgroundColor: '#FF0000' }} activeTabStyle={{ backgroundColor: '#fff' }} textStyle={{ color: '#fff' }} activeTextStyle={{ color: '#FF0000' }} heading="Realizados">
+            {this.renderList(madeList, orders.MADE)}
           </Tab>
-          <Tab tabStyle={{backgroundColor: '#FF0000'}} activeTabStyle={{backgroundColor: '#fff'}} textStyle={{color: '#fff'}} activeTextStyle={{color: '#FF0000',}} heading="Andamento">
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={{ paddingVertical: 10,marginBottom: 50}}
-            >
-              <View flex={0} row space="between" style={styles.categories}>
-                {categories.map(category => (
-                <TouchableOpacity key={category.id}>
-                  <Card>  
-                    <Text style={styles.textCardLeft}>Nº{category.numberOrder} - Mesa: {category.mesa}</Text>
-                    <Text style={styles.textStuff}>{category.order}</Text>
-                  </Card>
-                </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
-          </Tab>
-          <Tab tabStyle={{backgroundColor: '#FF0000'}} activeTabStyle={{backgroundColor: '#fff'}} textStyle={{color: '#fff'}} activeTextStyle={{color: '#FF0000',}} heading="Finalizados">
-            <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={{ paddingVertical: 10,marginBottom: 50}}
-            >
-              <View flex={0} row space="between" style={styles.categories}>
-                {categories.map(category => (
-                <TouchableOpacity key={category.id}>
-                  <Card>  
-                    <Text style={styles.textCardLeft}>Nº{category.numberOrder} - Mesa: {category.mesa}</Text>
-                    <Text style={styles.textStuff}>{category.order}</Text>
-                  </Card>
-                </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
+          <Tab tabStyle={{ backgroundColor: '#FF0000' }} activeTabStyle={{ backgroundColor: '#fff' }} textStyle={{ color: '#fff' }} activeTextStyle={{ color: '#FF0000' }} heading="Em Andamento">
+            {this.renderList(inProgressList, orders.IN_PROGRESS)}
           </Tab>
         </Tabs>
+        <Toast ref="toast"/>
       </Container>
     );
   }
 }
-  
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -173,7 +138,7 @@ const styles = StyleSheet.create({
     marginTop: 7,
     fontSize: 20
   },
-  textStuff:{
+  textStuff: {
     textAlign: 'center',
     marginTop: 3,
     fontSize: 14
@@ -182,12 +147,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     fontWeight: 'bold',
-    color: "#ff0000"
+    color: '#ff0000'
   },
-  imageCard:{
-    width:60, 
-    height:60,
-    borderRadius:10, 
-    marginRight:5
+  imageCard: {
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+    marginRight: 5
   },
 });
+
+const mapStateToProps = ({
+  OrdersReducer:
+  {
+    madeList,
+    inProgressList,
+    errorMessage,
+    fetchLoadState
+  }
+}) => ({
+  madeList,
+  inProgressList,
+  errorMessage,
+  isLoading: fetchLoadState
+});
+
+export default connect(mapStateToProps, { fetchOrders, addToProgress, finalize, addToMade })(Orders);

@@ -8,6 +8,7 @@ import { Icon, Button } from 'react-native-elements';
 import { connect } from 'react-redux';
 import reactotron from 'reactotron-react-native';
 import ActionButton from 'react-native-action-button';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import ProductForm from '../../components/Product/ProductForm';
 import styles from './styles';
 import { appTheme } from '../../constants/styles';
@@ -20,7 +21,6 @@ import { fetch as fetchCategories } from '../../store/actions/CategoryActions';
 import ProductList from '../../components/Product/ProductList';
 import { getUserId } from '../../services/userServices';
 import api from '../../services/api';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 class Products extends Component {
@@ -243,42 +243,45 @@ class Products extends Component {
             onSubmit={this.props.edit}
           />
         </Modal>
-        {this.props.categoryList.length > 0 ?
+        {this.props.categoryList.length > 0 ? (
           <ModalSelector
-          data={this.props.categoryList}
-          cancelText="Cancelar"
-          optionTextStyle={{ color: appTheme.COLOR, fontWeight: 'bold', fontSize: 17 }}
-          supportedOrientations={['landscape']}
-          accessible
-          scrollViewAccessibilityLabel="Scrollable options"
-          cancelButtonAccessibilityLabel="Cancel Button"
-          onChange={option => this.onValuePickerChange(option)}
-          keyExtractor={item => item.id}
-          labelExtractor={item => item.name}
-        >
-          <View
-            style={{
-              borderWidth: 1, borderColor: '#ccc', alignItems: 'center', elevation: 1, height: 50, margin: 10, justifyContent: 'center', borderRadius: 4
-            }}
-            placeholder="Selecione uma categoria"
-            placeholderTextColor={appTheme.COLOR}
+            data={this.props.categoryList}
+            cancelText="Cancelar"
+            optionTextStyle={{ color: appTheme.COLOR, fontWeight: 'bold', fontSize: 17 }}
+            supportedOrientations={['landscape']}
+            accessible
+            scrollViewAccessibilityLabel="Scrollable options"
+            cancelButtonAccessibilityLabel="Cancel Button"
+            onChange={option => this.onValuePickerChange(option)}
+            keyExtractor={item => item.id}
+            labelExtractor={item => item.name}
           >
-            <Text style={{ fontWeight: 'bold', color: appTheme.COLOR, fontSize: 18 }}>
-              {this.state.selectedCategory.name ? this.state.selectedCategory.name : 'Selecione uma categoria'}
-            </Text>
-          </View>
+            <View
+              style={{
+                borderWidth: 1, borderColor: '#ccc', alignItems: 'center', elevation: 1, height: 50, margin: 10, justifyContent: 'center', borderRadius: 4
+              }}
+              placeholder="Selecione uma categoria"
+              placeholderTextColor={appTheme.COLOR}
+            >
+              <Text style={{ fontWeight: 'bold', color: appTheme.COLOR, fontSize: 18 }}>
+                {this.state.selectedCategory.name ? this.state.selectedCategory.name : 'Selecione uma categoria'}
+              </Text>
+            </View>
 
-        </ModalSelector>
-        :
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('Categories')}
-            style={{
-            borderWidth: 1, borderColor: '#ccc', alignItems: 'center', elevation: 1, height: 50, margin: 10, justifyContent: 'center', borderRadius: 4
-          }}>
+          </ModalSelector>
+        )
+          : (
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('Categories')}
+              style={{
+                borderWidth: 1, borderColor: '#ccc', alignItems: 'center', elevation: 1, height: 50, margin: 10, justifyContent: 'center', borderRadius: 4
+              }}
+            >
               <Text style={{ fontWeight: 'bold', color: appTheme.COLOR, fontSize: 18 }}>
                 Adicione uma categoria para começar!
               </Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          )
       }
         {this.renderList()}
         <ActionButton buttonColor={appTheme.COLOR}>

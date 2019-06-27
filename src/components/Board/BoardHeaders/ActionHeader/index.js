@@ -45,14 +45,19 @@ const ActionHeader = props => (
         color="#ddd"
         onPress={props.onPressRemove}
       />
-      <Icon
-        containerStyle={{ marginHorizontal: 10, marginBottom: 10 }}
-        size={27}
-        type="material"
-        name="print"
-        color="#ddd"
-        onPress={props.onPressPrint}
-      />
+      {
+        props.count === 1
+          && (
+          <Icon
+            containerStyle={{ marginHorizontal: 10, marginBottom: 10 }}
+            size={27}
+            type="material"
+            name="info"
+            color="#ddd"
+            onPress={props.onPressDetail}
+          />
+          )
+      }
       <Icon
         containerStyle={{ marginHorizontal: 10, marginBottom: 10 }}
         size={27}

@@ -11,6 +11,7 @@ import styles from './styles';
 import DefaultHeader from '../../components/Board/BoardHeaders/DefaultHeader';
 import ActionHeader from '../../components/Board/BoardHeaders/ActionHeader';
 import BoardModal from '../../components/Board/BoardModal';
+import BoardDetailModal from '../../components/Board/BoardDetailModal';
 import { appTheme } from '../../constants/styles';
 import {
   fetch, create, remove, toggle
@@ -19,7 +20,8 @@ import { generateCode } from '../../services/boardServices';
 
 class Boards extends Component {
   state = {
-    modalVisible: false,
+    modalAddVisible: false,
+    detailModalVisible: false,
     defaultSpring: new Animated.Value(1),
     // BUG DO REAT NATIVE 0.01
     actionSpring: new Animated.Value(0.01),
@@ -49,13 +51,15 @@ class Boards extends Component {
     }
     const code = generateCode();
     this.props.create({ number, code });
-    this.setModalVisible(false);
+    this.setModalAddVisible(false);
   }
 
-  onPressPrint = () => {};
+  onPressDetail = () => {
+    this.setDetailModalVisible(true);
+  };
 
-  setModalVisible = (status) => {
-    this.setState({ modalVisible: status });
+  setModalAddVisible = (status) => {
+    this.setState({ modalAddVisible: status });
   };
 
   onPressSelectAll = () => {
@@ -134,7 +138,7 @@ class Boards extends Component {
             count={this.props.selectedCount}
             onPressExit={this.onPressExit}
             onPressRemove={this.onPressRemove}
-            onPressPrint={this.onPressPrint}
+            onPressDetail={this.onPressDetail}
             onPressSelectAll={this.onPressSelectAll}
           />
         </Animated.View>
@@ -188,14 +192,19 @@ class Boards extends Component {
     );
   }
 
+  setDetailModalVisible = (status) => {
+    this.setState({ detailModalVisible: status });
+  }
+
   render() {
     return (
       <View style={styles.container}>
         {this.renderHeader()}
-        <BoardModal isVisible={this.state.modalVisible} setModalVisible={this.setModalVisible} onSubmit={this.handleAddBoard}/>
+        <BoardDetailModal isVisible={this.state.detailModalVisible} setModalVisible={this.setDetailModalVisible} />
+        <BoardModal isVisible={this.state.modalAddVisible} setModalVisible={this.setModalAddVisible} onSubmit={this.handleAddBoard}/>
         {this.renderList()}
         <ActionButton buttonColor={appTheme.COLOR}>
-          <ActionButton.Item buttonColor="#9b59b6" title="Adicionar mesas" onPress={() => this.setModalVisible(true)}>
+          <ActionButton.Item buttonColor="#9b59b6" title="Adicionar mesas" onPress={() => this.setModalAddVisible(true)}>
             <Icon type="material" name="list" color="#ddd" />
           </ActionButton.Item>
         </ActionButton>
